@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartdocs-db
+    environment:
+      POSTGRES_DB: smartdocs
+      POSTGRES_USER: smartdocs
+      POSTGRES_PASSWORD: smartdocs123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: smartdocs-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: smartdocs
+      RABBITMQ_DEFAULT_PASS: smartdocs123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  pgdata:

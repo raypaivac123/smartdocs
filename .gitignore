@@ -1,5 +1,9 @@
 HELP.md
 target/
+out/
+uploads/
+.agents/
+*.log
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SmartDocs — Documents</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar"></div>
+  <div style="flex:1;display:flex;flex-direction:column;">
+    <div id="topbar"></div>
+    <main class="main-content">
+
+      <!-- Header -->
+      <div class="flex-between mb-16">
+        <div>
+          <h1 class="page-title">All Documents</h1>
+          <p class="page-subtitle" id="doc-count">7 documents found</p>
+        </div>
+        <a href="upload.html" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Document
+        </a>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <!-- Filters inside card header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #F3F4F6;flex-wrap:wrap;gap:10px;">
+          <div class="search-wrap" style="max-width:300px;">
+            ${Icons ? '' : ''}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#9CA3AF;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search by filename..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid #E5E7EB;border-radius:8px;font-size:13.5px;outline:none;font-family:inherit;background:#fff;color:#374151;" oninput="filterDocs()"/>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="filter-btn" style="gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;color:#6B7280;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <select id="filter-status" class="select-field" style="border:none;padding:0;background:transparent;font-size:13.5px;color:#374151;cursor:pointer;" onchange="filterDocs()">
+                <option value="">All Status</option>
+                <option value="processed">Processed</option>
+                <option value="pending">Pending</option>
+                <option value="error">Error</option>
+              </select>
+            </button>
+            <select id="filter-type" class="select-field" onchange="filterDocs()">
+              <option value="">All Types</option>
+              <option value="VERTRAG">Vertrag</option>
+              <option value="RECHNUNG">Rechnung</option>
+              <option value="ANTRAG">Antrag</option>
+              <option value="BERICHT">Bericht</option>
+              <option value="RECHTSSCHREIBEN">Rechtsschreiben</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Filename</th>
+                <th>Classification</th>
+                <th>Status</th>
+                <th>Uploaded By</th>
+                <th>Uploaded At</th>
+                <th>Processed At</th>
+                <th style="text-align:center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="docs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="../js/shared.js"></script>
+<script>
+Auth.require();
+renderSidebar('documents');
+renderTopbar();
+
+let docs = [...Mock.documents];
+
+function renderTable(data) {
+  document.getElementById('doc-count').textContent = `${data.length} document${data.length !== 1 ? 's' : ''} found`;
+  document.getElementById('docs-tbody').innerHTML = data.length ? data.map(d => `
+    <tr style="cursor:pointer;">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:30px;height:30px;background:#EFF6FF;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span style="font-weight:500;color:#111827;font-size:13.5px;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.filename}</span>
+        </div>
+      </td>
+      <td>${classificationBadge(d.classification)}</td>
+      <td>${statusBadge(d.status)}</td>
+      <td class="td-muted">${d.uploadedBy}</td>
+      <td class="td-muted">${d.uploadedAt}</td>
+      <td class="td-muted">${d.processedAt || '—'}</td>
+      <td>
+        <div style="display:flex;gap:6px;justify-content:center;">
+          <button class="btn-icon" title="View" onclick="showToast('Opening document detail…','info')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn-icon danger" title="Delete" onclick="deleteDoc('${d.id}','${d.filename}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">
+      <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:#9CA3AF;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="empty-state-title">No documents found</div>
+      <div class="empty-state-text">Try adjusting your filters</div>
+    </div></td></tr>`;
+}
+
+function filterDocs() {
+  const q  = document.getElementById('search-input').value.toLowerCase();
+  const st = document.getElementById('filter-status').value;
+  const ty = document.getElementById('filter-type').value;
+  let filtered = docs.filter(d =>
+    (!q  || d.filename.toLowerCase().includes(q)) &&
+    (!st || d.status === st) &&
+    (!ty || d.classification === ty)
+  );
+  renderTable(filtered);
+}
+
+function deleteDoc(id, name) {
+  showConfirm('Delete Document', `Are you sure you want to delete "${name}"? This action cannot be undone.`, () => {
+    docs = docs.filter(d => d.id !== id);
+    filterDocs();
+    showToast('Document deleted successfully.', 'success');
+  });
+}
+
+renderTable(docs);
+</script>
+</body>
+</html>

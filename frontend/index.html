@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SmartDocs — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#F8F9FB;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#111827}
+    .login-wrap{width:420px;max-width:90vw}
+    .login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+    .login-logo-icon{width:44px;height:44px;background:#2563EB;border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .login-logo-icon svg{width:24px;height:24px;color:#fff;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+    .login-logo-text{font-size:22px;font-weight:700;color:#111827}
+    .login-card{background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:32px}
+    .login-title{font-size:22px;font-weight:700;color:#111827;margin-bottom:6px}
+    .login-sub{font-size:14px;color:#6B7280;margin-bottom:28px}
+    .form-group{margin-bottom:18px}
+    .form-label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px}
+    .form-input{width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;color:#111827;outline:none;transition:border-color .15s;font-family:inherit;background:#fff}
+    .form-input:focus{border-color:#2563EB;box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+    .form-input::placeholder{color:#9CA3AF}
+    .btn-login{width:100%;padding:11px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;margin-top:8px}
+    .btn-login:hover{background:#1D4ED8}
+    .hint{margin-top:20px;padding:12px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;font-size:12.5px;color:#374151}
+    .hint strong{color:#16A34A}
+    .hint code{font-family:monospace;background:#fff;padding:1px 6px;border-radius:4px;border:1px solid #D1D5DB;color:#2563EB;cursor:pointer}
+    .error-msg{color:#DC2626;font-size:12.5px;margin-top:6px;display:none}
+  </style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-logo">
+    <div class="login-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="15" r="2"/><path d="M12 13v-2"/></svg>
+    </div>
+    <span class="login-logo-text">SmartDocs</span>
+  </div>
+  <div class="login-card">
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">AI-powered document intelligence platform</div>
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-input" type="email" id="email" placeholder="name@company.de" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <div class="error-msg" id="error-msg">Invalid email or password.</div>
+      <button class="btn-login" type="submit" id="submit-btn">Sign in</button>
+    </form>
+    <div class="hint">
+      <strong>Demo credentials:</strong><br/>
+      <code onclick="fillDemo()">dev@smartdocs.de / demo123</code> — click to fill
+    </div>
+  </div>
+</div>
+<script>
+  // Already logged in?
+  if (localStorage.getItem('sd_token')) {
+    window.location.href = 'pages/dashboard.html';
+  }
+
+  function fillDemo() {
+    document.getElementById('email').value    = 'dev@smartdocs.de';
+    document.getElementById('password').value = 'demo123';
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value;
+    const btn   = document.getElementById('submit-btn');
+    const err   = document.getElementById('error-msg');
+
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+    err.style.display = 'none';
+
+    await new Promise(r => setTimeout(r, 700));
+
+    const users = [
+      { email:'dev@smartdocs.de',   password:'demo123', name:'Anna Schmidt', role:'ADMIN', initials:'AS' },
+      { email:'admin@smartdocs.de', password:'admin123', name:'Klaus Fischer', role:'ADMIN', initials:'KF' },
+    ];
+    const user = users.find(u => u.email === email && u.password === pass);
+
+    if (user) {
+      const { password: _, ...safeUser } = user;
+      localStorage.setItem('sd_token', 'mock-jwt-' + Date.now());
+      localStorage.setItem('sd_user', JSON.stringify(safeUser));
+      window.location.href = 'pages/dashboard.html';
+    } else {
+      err.style.display = 'block';
+      btn.textContent = 'Sign in';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

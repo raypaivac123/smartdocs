@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SmartDocs — Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar"></div>
+  <div style="flex:1;display:flex;flex-direction:column;">
+    <div id="topbar"></div>
+    <main class="main-content">
+
+      <!-- Header -->
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Overview of document processing and system activity</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Total Documents</span>
+            <div class="stat-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-total">127</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Pending Processing</span>
+            <div class="stat-icon yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="stat-value yellow" id="stat-pending">8</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Processed</span>
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+          <div class="stat-value green" id="stat-processed">115</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Errors</span>
+            <div class="stat-icon red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+          </div>
+          <div class="stat-value red" id="stat-errors">4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Open Tasks</span>
+            <div class="stat-icon teal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-tasks">12</div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;margin-bottom:20px;">
+
+        <!-- Bar chart -->
+        <div class="card">
+          <div class="card-title">Documents Processed per Week</div>
+          <div class="card-subtitle mb-16">Last 5 weeks processing activity</div>
+          <canvas id="bar-chart" height="220" style="width:100%;display:block;"></canvas>
+        </div>
+
+        <!-- AI Queue -->
+        <div class="card">
+          <div class="card-title">AI Processing Queue</div>
+          <div class="card-subtitle">Current processing status</div>
+          <div style="margin-top:20px;display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block;"></span>
+                <span style="font-size:13.5px;color:#374151;">Active Workers</span>
+              </div>
+              <span style="font-size:14px;font-weight:600;color:#111827;">3</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg style="width:16px;height:16px;color:#D97706;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span style="font-size:13.5px;color:#374151;">In Queue</span>
+              </div>
+              <span style="font-size:14px;font-weight:600;color:#111827;">8</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg style="width:16px;height:16px;color:#16A34A;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span style="font-size:13.5px;color:#374151;">Processed Today</span>
+              </div>
+              <span style="font-size:14px;font-weight:600;color:#111827;">42</span>
+            </div>
+          </div>
+          <div style="border-top:1px solid #F3F4F6;padding-top:16px;margin-top:4px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span style="font-size:13px;color:#6B7280;">System Status</span>
+              <span class="badge badge-operational">Operational</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#16A34A;flex-shrink:0;"></span>RabbitMQ: Connected
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#16A34A;flex-shrink:0;"></span>Claude AI: Active
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#16A34A;flex-shrink:0;"></span>PostgreSQL: Connected
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Documents -->
+      <div class="card">
+        <div class="flex-between mb-16">
+          <div>
+            <div class="card-title">Recent Documents</div>
+            <div class="card-subtitle">Latest uploaded and processed documents</div>
+          </div>
+          <a href="documents.html" class="btn btn-ghost btn-sm" style="font-size:13px;color:#2563EB;">View all →</a>
+        </div>
+        <div id="recent-docs"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/shared.js"></script>
+<script>
+Auth.require();
+renderSidebar('dashboard');
+renderTopbar();
+
+// Recent docs
+function renderRecentDocs() {
+  const docs = Mock.documents.slice(0, 4);
+  document.getElementById('recent-docs').innerHTML = docs.map(d => `
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F3F4F6;">
+      <div class="doc-icon-wrap">${Icons.doc}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:500;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.filename}</div>
+        <div style="font-size:12.5px;color:#9CA3AF;margin-top:2px;">Uploaded by ${d.uploadedBy} &bull; ${d.uploadedAt}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        ${statusBadge(d.status)}
+        ${classificationBadge(d.classification)}
+      </div>
+    </div>
+  `).join('').replace(/<div style="[^"]*border-bottom[^"]*">([^]*?)<\/div>\s*$/, m => m.replace('border-bottom:1px solid #F3F4F6;',''));
+}
+renderRecentDocs();
+
+// Bar chart
+function drawBarChart() {
+  const canvas = document.getElementById('bar-chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth;
+  const H = 220;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const data   = [17, 24, 32, 29, 25];
+  const labels = ['Week 1','Week 2','Week 3','Week 4','Week 5'];
+  const maxVal = 36;
+  const padL = 44, padR = 16, padT = 12, padB = 36;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const barW = (chartW / data.length) * 0.55;
+  const barGap = chartW / data.length;
+
+  // Grid lines
+  ctx.strokeStyle = '#F3F4F6';
+  ctx.lineWidth = 1;
+  [0, 8, 16, 24, 32].forEach(v => {
+    const y = padT + chartH - (v / maxVal) * chartH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillStyle = '#9CA3AF'; ctx.font = '11px Inter,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(v, padL - 6, y + 4);
+  });
+
+  // Bars
+  data.forEach((v, i) => {
+    const x = padL + i * barGap + (barGap - barW) / 2;
+    const bh = (v / maxVal) * chartH;
+    const y = padT + chartH - bh;
+    const r = 6;
+    ctx.fillStyle = '#2563EB';
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + barW - r, y);
+    ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+    ctx.lineTo(x + barW, y + bh); ctx.lineTo(x, y + bh);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath(); ctx.fill();
+    // Labels
+    ctx.fillStyle = '#6B7280'; ctx.font = '11.5px Inter,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(labels[i], x + barW / 2, H - 10);
+  });
+}
+setTimeout(drawBarChart, 50);
+window.addEventListener('resize', () => { setTimeout(drawBarChart, 100); });
+</script>
+</body>
+</html>

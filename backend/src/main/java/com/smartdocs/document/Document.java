@@ -68,7 +68,7 @@ public class Document {
     private List<com.smartdocs.task.Task> tasks = new ArrayList<>();
 
     public enum Classification {
-        VERTRAG, RECHNUNG, ANTRAG, BERICHT, RECHTSSCHREIBEN
+        CONTRACT, INVOICE, APPLICATION, REPORT, LEGAL_DOCUMENT
     }
 
     public enum DocumentStatus {

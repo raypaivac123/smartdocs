@@ -36,7 +36,6 @@ public class User implements UserDetails {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    // ── UserDetails — obrigatório pelo Spring Security ────────
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role));

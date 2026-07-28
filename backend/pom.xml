@@ -14,7 +14,7 @@
 		<relativePath/>
 	</parent>
 
-	<!-- ── Projeto ────────────────────────────────────────── -->
+	<!-- Project -->
 	<groupId>com.smartdocs</groupId>
 	<artifactId>smartdocs</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -22,7 +22,7 @@
 	<description>AI Document Intelligence Platform</description>
 	<packaging>jar</packaging>
 
-	<!-- ── Versões ────────────────────────────────────────── -->
+	<!-- Versions -->
 	<properties>
 		<java.version>21</java.version>
 		<jjwt.version>0.12.6</jjwt.version>
@@ -66,7 +66,7 @@
 		</dependency>
 
 		<!-- ══════════════════════════════════════════════════
-             BANCO DE DADOS
+             DATABASE
         ══════════════════════════════════════════════════ -->
 
 		<dependency>
@@ -110,7 +110,7 @@
 		</dependency>
 
 		<!-- ══════════════════════════════════════════════════
-             PDF — extrai texto dos documentos
+             PDF - document text extraction
         ══════════════════════════════════════════════════ -->
 
 		<dependency>
@@ -130,7 +130,7 @@
 		</dependency>
 
 		<!-- ══════════════════════════════════════════════════
-             JSON — suporte a datas Java 8+
+             JSON - Java 8+ date support
         ══════════════════════════════════════════════════ -->
 
 		<dependency>
@@ -199,7 +199,7 @@
 	</dependencies>
 
 	<!-- ══════════════════════════════════════════════════════
-         BUILD — plugins
+         BUILD - plugins
     ══════════════════════════════════════════════════════ -->
 
 	<build>
@@ -219,7 +219,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Maven Compiler Plugin — força compilação com Java 21 -->
+			<!-- Maven Compiler Plugin - compile with Java 21 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -228,7 +228,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- JaCoCo — relatório de cobertura de testes -->
+			<!-- JaCoCo - test coverage report -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

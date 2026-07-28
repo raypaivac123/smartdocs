@@ -15,14 +15,20 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -42,7 +48,6 @@ public class DocumentService {
     @Value("${smartdocs.storage.path}")
     private String storagePath;
 
-    /* ── Upload ──────────────────────────────────────────── */
     @Transactional
     public Document upload(MultipartFile file) throws IOException {
         validateFile(file);
@@ -72,31 +77,21 @@ public class DocumentService {
                 "UPLOAD",
                 "Document",
                 doc.getId().toString(),
-                file.getOriginalFilename() + " hochgeladen"
+                file.getOriginalFilename() + " uploaded"
         );
 
-        /*
-         * RabbitMQ:
-         * Depois de salvar o documento no banco,
-         * enviamos o ID dele para a fila.
-         *
-         * O Consumer recebe essa mensagem e chama:
-         * processDocument(docId)
-         */
         documentProcessingProducer.sendDocumentForProcessing(doc.getId());
 
         return doc;
     }
 
-    /* ── Processamento via RabbitMQ ───────────────────────── */
     @Transactional
     public void processDocument(UUID docId) {
         documentRepo.findById(docId).ifPresent(doc -> {
             try {
-                log.info("Processando documento via RabbitMQ: {}", doc.getFilename());
+                log.info("Processing document via RabbitMQ: {}", doc.getFilename());
 
                 String text = extractText(doc.getFilePath());
-
                 var analysis = claudeService.analyzeDocument(text, doc.getFilename());
 
                 doc.setClassification(parseClassification(analysis.classification()));
@@ -129,7 +124,7 @@ public class DocumentService {
                                 "TASK_GEN",
                                 "Task",
                                 task.getId().toString(),
-                                "Aufgabe automaticamente criada a partir do documento " + saved.getId()
+                                "Task automatically created from document " + saved.getId()
                         );
                     });
                 }
@@ -138,11 +133,10 @@ public class DocumentService {
                         "PROCESSED",
                         "Document",
                         doc.getId().toString(),
-                        "KI-Analyse: " + analysis.classification()
+                        "AI analysis: " + analysis.classification()
                 );
-
             } catch (Exception e) {
-                log.error("Erro ao processar documento {}: {}", docId, e.getMessage());
+                log.error("Error processing document {}: {}", docId, e.getMessage());
 
                 doc.setStatus(Document.DocumentStatus.ERROR);
                 doc.setErrorMessage(e.getMessage());
@@ -153,17 +147,15 @@ public class DocumentService {
                         "ERROR",
                         "Document",
                         docId.toString(),
-                        "Falha: " + e.getMessage()
+                        "Failure: " + e.getMessage()
                 );
             }
         });
     }
 
-    /* ── Listagem com filtros ─────────────────────────────── */
     @Transactional(readOnly = true)
     public Page<Document> findAll(String search, String classification,
                                   String status, int page, int size) {
-
         Pageable pageable = PageRequest.of(
                 page,
                 size,
@@ -173,15 +165,6 @@ public class DocumentService {
         Document.Classification cls = parseClassification(classification);
         Document.DocumentStatus st = parseStatus(status);
 
-        /*
-         * CORREÇÃO 1:
-         * Removemos o documentRepo.findAllFiltered(...).
-         *
-         * Agora usamos Specification, porque seu Repository está com:
-         * JpaSpecificationExecutor<Document>.
-         *
-         * Isso evita o erro do PostgreSQL com LOWER(bytea).
-         */
         Page<Document> documents = documentRepo.findAll((root, query, cb) -> {
             var predicates = new ArrayList<Predicate>();
 
@@ -195,28 +178,16 @@ public class DocumentService {
             }
 
             if (cls != null) {
-                predicates.add(
-                        cb.equal(root.get("classification"), cls)
-                );
+                predicates.add(cb.equal(root.get("classification"), cls));
             }
 
             if (st != null) {
-                predicates.add(
-                        cb.equal(root.get("status"), st)
-                );
+                predicates.add(cb.equal(root.get("status"), st));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         }, pageable);
 
-        /*
-         * CORREÇÃO 2:
-         * Forçamos o carregamento de uploadedBy e tasks ainda dentro
-         * do @Transactional.
-         *
-         * Isso evita:
-         * LazyInitializationException: could not initialize proxy User - no Session
-         */
         documents.getContent().forEach(document -> {
             if (document.getUploadedBy() != null) {
                 document.getUploadedBy().getName();
@@ -230,19 +201,13 @@ public class DocumentService {
         return documents;
     }
 
-    /* ── Busca por ID ─────────────────────────────────────── */
     @Transactional(readOnly = true)
     public Document findById(UUID id) {
         Document document = documentRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Dokument nicht gefunden: " + id
+                        "Document not found: " + id
                 ));
 
-        /*
-         * CORREÇÃO:
-         * Também carregamos uploadedBy e tasks aqui,
-         * caso o endpoint de buscar por ID use esses dados no DTO.
-         */
         if (document.getUploadedBy() != null) {
             document.getUploadedBy().getName();
         }
@@ -254,7 +219,6 @@ public class DocumentService {
         return document;
     }
 
-    /* ── Delete ───────────────────────────────────────────── */
     @Transactional
     public void delete(UUID id) {
         Document doc = findById(id);
@@ -263,7 +227,7 @@ public class DocumentService {
             try {
                 Files.deleteIfExists(Paths.get(doc.getFilePath()));
             } catch (IOException e) {
-                log.warn("Arquivo não encontrado: {}", doc.getFilePath());
+                log.warn("File not found: {}", doc.getFilePath());
             }
         }
 
@@ -273,24 +237,23 @@ public class DocumentService {
                 "DELETE",
                 "Document",
                 id.toString(),
-                doc.getFilename() + " gelöscht"
+                doc.getFilename() + " deleted"
         );
     }
 
-    /* ── Helpers privados ─────────────────────────────────── */
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("Datei ist leer.");
+            throw new IllegalArgumentException("File is empty.");
         }
 
         String name = file.getOriginalFilename();
 
         if (name == null || !name.toLowerCase().endsWith(".pdf")) {
-            throw new IllegalArgumentException("Nur PDF-Dateien sind erlaubt.");
+            throw new IllegalArgumentException("Only PDF files are allowed.");
         }
 
         if (file.getSize() > 20L * 1024 * 1024) {
-            throw new IllegalArgumentException("Datei zu groß. Maximum: 20 MB.");
+            throw new IllegalArgumentException("File too large. Maximum: 20 MB.");
         }
     }
 
@@ -339,5 +302,4 @@ public class DocumentService {
 
         return userRepo.findByEmail(email).orElse(null);
     }
-
 }

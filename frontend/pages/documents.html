@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SmartDocs — Documents</title>
+  <title>SmartDocs - Documents</title>
   <link rel="stylesheet" href="../css/main.css"/>
 </head>
 <body>
@@ -30,7 +30,6 @@
         <!-- Filters inside card header -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #F3F4F6;flex-wrap:wrap;gap:10px;">
           <div class="search-wrap" style="max-width:300px;">
-            ${Icons ? '' : ''}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#9CA3AF;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="search-input" placeholder="Search by filename..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid #E5E7EB;border-radius:8px;font-size:13.5px;outline:none;font-family:inherit;background:#fff;color:#374151;" oninput="filterDocs()"/>
           </div>
@@ -46,11 +45,11 @@
             </button>
             <select id="filter-type" class="select-field" onchange="filterDocs()">
               <option value="">All Types</option>
-              <option value="VERTRAG">Vertrag</option>
-              <option value="RECHNUNG">Rechnung</option>
-              <option value="ANTRAG">Antrag</option>
-              <option value="BERICHT">Bericht</option>
-              <option value="RECHTSSCHREIBEN">Rechtsschreiben</option>
+              <option value="CONTRACT">Contract</option>
+              <option value="INVOICE">Invoice</option>
+              <option value="APPLICATION">Application</option>
+              <option value="REPORT">Report</option>
+              <option value="LEGAL_DOCUMENT">Legal Document</option>
             </select>
           </div>
         </div>
@@ -100,10 +99,10 @@ function renderTable(data) {
       <td>${statusBadge(d.status)}</td>
       <td class="td-muted">${d.uploadedBy}</td>
       <td class="td-muted">${d.uploadedAt}</td>
-      <td class="td-muted">${d.processedAt || '—'}</td>
+      <td class="td-muted">${d.processedAt || '-'}</td>
       <td>
         <div style="display:flex;gap:6px;justify-content:center;">
-          <button class="btn-icon" title="View" onclick="showToast('Opening document detail…','info')">
+          <button class="btn-icon" title="View" onclick="showToast('Opening document detail...','info')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
           <button class="btn-icon danger" title="Delete" onclick="deleteDoc('${d.id}','${d.filename}')">

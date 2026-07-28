@@ -2,13 +2,14 @@ package com.smartdocs.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -35,14 +36,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> validation(
-            MethodArgumentNotValidException e) {
+    public ResponseEntity<Map<String, Object>> validation(MethodArgumentNotValidException e) {
         Map<String, String> errors = e.getBindingResult()
                 .getFieldErrors().stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
-                        f -> f.getDefaultMessage() != null
-                                ? f.getDefaultMessage() : "Inválido"
+                        f -> f.getDefaultMessage() != null ? f.getDefaultMessage() : "Invalid"
                 ));
         return ResponseEntity.badRequest()
                 .body(Map.of("errors", errors, "status", 400));
@@ -50,15 +49,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> generic(Exception e) {
-        log.error("Erro não tratado: ", e);
+        log.error("Unhandled error: ", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Interner Serverfehler."));
+                .body(new ErrorResponse(500, "Internal server error."));
     }
 
-    record ErrorResponse(int status, String message) {
-        ErrorResponse(int status, String message) {
-            this.status  = status;
-            this.message = message;
-        }
-    }
+    record ErrorResponse(int status, String message) {}
 }

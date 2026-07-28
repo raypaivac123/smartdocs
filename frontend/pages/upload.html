@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SmartDocs — Upload</title>
+  <title>SmartDocs - Upload</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <style>
     .dropzone {
@@ -105,7 +105,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           </div>
           <div class="dropzone-title">Drop your PDF here or browse files</div>
-          <div class="dropzone-sub">PDF only · Max size 20 MB</div>
+          <div class="dropzone-sub">PDF only - Max size 20 MB</div>
           <button class="btn btn-primary" onclick="event.stopPropagation();document.getElementById('file-input').click()">Browse Files</button>
         </div>
 
@@ -115,7 +115,7 @@
           <div class="progress-bar-track" style="width:100%;">
             <div class="progress-bar-fill" id="prog-bar"></div>
           </div>
-          <div style="font-size:13.5px;color:#6B7280;" id="prog-status">Uploading…</div>
+          <div style="font-size:13.5px;color:#6B7280;" id="prog-status">Uploading...</div>
         </div>
       </div>
 
@@ -155,10 +155,10 @@
         <div>
           <div class="info-box-title">Supported Document Types</div>
           <div class="info-box-text">
-            Our AI can process and classify various German document types including:
-            <strong>Verträge (Contracts)</strong>, <strong>Rechnungen (Invoices)</strong>,
-            <strong>Anträge (Applications)</strong>, <strong>Berichte (Reports)</strong>,
-            and <strong>Rechtsschreiben (Legal Documents)</strong>.
+            Our AI can process and classify common business documents including:
+            <strong>contracts</strong>, <strong>invoices</strong>,
+            <strong>applications</strong>, <strong>reports</strong>,
+            and <strong>legal documents</strong>.
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@ function startUpload(file) {
   overlay.style.display = 'flex';
   document.getElementById('prog-filename').textContent = file.name;
 
-  const steps = ['Uploading…', 'Validating file…', 'Sending to queue…', 'AI analysis in progress…', '✓ Processing complete!'];
+  const steps = ['Uploading...', 'Validating file...', 'Sending to queue...', 'AI analysis in progress...', 'Processing complete!'];
   let step = 0;
   const bar = document.getElementById('prog-bar');
   const status = document.getElementById('prog-status');

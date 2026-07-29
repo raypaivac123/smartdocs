@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartDocs — Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0e14;
+    --surface: #131720;
+    --surface-hover: #171c27;
+    --border: #232838;
+    --border-soft: #1a1f2b;
+    --text: #e6e9ef;
+    --text-dim: #8b93a7;
+    --text-faint: #545d70;
+    --alta: #ff6b6b;
+    --media: #ffb84d;
+    --baixa: #5eb8ff;
+    --done: #4ade80;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(94,184,255,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(255,107,107,0.05), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; gap:20px;
+    padding:16px 28px;
+    background:rgba(11,14,20,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--border-soft);
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; flex-direction:column; gap:2px;
+    font-family:var(--mono);
+  }
+  .brand-line{ display:flex; align-items:baseline; gap:10px; }
+  .brand .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--done);
+    box-shadow:0 0 10px var(--done);
+    display:inline-block;
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:.5; transform:scale(.8);}
+  }
+  .brand h1{
+    font-size:15px; margin:0; font-weight:700; letter-spacing:.02em;
+    color:var(--text);
+  }
+  .brand span.sub{color:var(--text-faint); font-size:12px;}
+  .brand .synced{ color:var(--text-faint); font-size:10.5px; padding-left:19px; }
+
+  .controls{
+    display:flex; gap:10px; align-items:center;
+    margin-left:auto; flex-wrap:wrap;
+  }
+  .search-wrap{ position:relative; }
+  .search-wrap svg{
+    position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    width:14px; height:14px; stroke:var(--text-faint);
+  }
+  #search{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:12.5px;
+    padding:8px 12px 8px 30px;
+    border-radius:7px;
+    width:200px;
+    outline:none;
+    transition:border-color .15s, width .2s;
+  }
+  #search:focus{ border-color:var(--baixa); width:230px; }
+  #search::placeholder{ color:var(--text-faint); }
+
+  select{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:12px;
+    padding:8px 10px;
+    border-radius:7px;
+    outline:none;
+    cursor:pointer;
+  }
+  select:hover{ color:var(--text); border-color:#2c3244; }
+
+  .btn{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-faint);
+    font-family:var(--mono);
+    font-size:12px;
+    padding:8px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn:hover{ color:var(--text); border-color:#2c3244; }
+  .btn.danger:hover{ color:var(--alta); border-color:var(--alta); }
+  .btn.accent:hover{ color:var(--baixa); border-color:var(--baixa); }
+
+  .stats{
+    display:flex; gap:0; padding:10px 28px;
+    border-bottom:1px solid var(--border-soft);
+    font-family:var(--mono); font-size:11.5px; color:var(--text-faint);
+    flex-wrap:wrap; gap:22px;
+  }
+  .stats b{ color:var(--text); font-weight:600; }
+  .stats .swatch{
+    display:inline-block; width:7px; height:7px; border-radius:1.5px; margin-right:5px;
+  }
+
+  .board{
+    display:flex;
+    gap:16px;
+    padding:22px 28px 60px;
+    overflow-x:auto;
+    align-items:flex-start;
+  }
+  .board::-webkit-scrollbar{ height:9px; }
+  .board::-webkit-scrollbar-track{ background:transparent; }
+  .board::-webkit-scrollbar-thumb{ background:var(--border); border-radius:6px; }
+
+  .column{
+    flex:0 0 300px;
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
+    max-height:calc(100vh - 150px);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .column.drag-over{
+    border-color:var(--baixa);
+    box-shadow:0 0 0 1px var(--baixa), 0 0 20px rgba(94,184,255,0.12);
+  }
+
+  .col-head{
+    padding:14px 14px 12px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .col-title-row{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:9px;
+  }
+  .col-title{
+    font-family:var(--mono); font-weight:600; font-size:12.5px;
+    color:var(--text); letter-spacing:.01em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .col-count{
+    font-family:var(--mono); font-size:11px; color:var(--text-faint);
+    background:var(--bg); border:1px solid var(--border);
+    border-radius:20px; padding:1px 8px;
+  }
+  .comp-bar{
+    display:flex; height:4px; border-radius:3px; overflow:hidden;
+    background:var(--border-soft);
+  }
+  .comp-bar span{ height:100%; }
+  .comp-legend{
+    display:flex; gap:10px; margin-top:7px;
+    font-family:var(--mono); font-size:9.5px; color:var(--text-faint);
+  }
+  .comp-legend em{ font-style:normal; color:var(--text-dim); }
+
+  .col-body{
+    padding:12px; display:flex; flex-direction:column; gap:9px;
+    overflow-y:auto;
+    flex:1;
+  }
+  .col-body::-webkit-scrollbar{ width:6px; }
+  .col-body::-webkit-scrollbar-thumb{ background:var(--border); border-radius:6px; }
+
+  .empty-slot{
+    font-family:var(--mono); font-size:11.5px; color:var(--text-faint);
+    text-align:center; padding:22px 8px; border:1px dashed var(--border);
+    border-radius:8px;
+  }
+
+  .card{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-left:3px solid var(--baixa);
+    border-radius:8px;
+    padding:11px 12px 10px;
+    cursor:grab;
+    transition:transform .12s, box-shadow .12s, border-color .12s;
+    position:relative;
+  }
+  .card:hover{
+    transform:translateY(-1px);
+    border-color:#2c3244;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  .card.dragging{ opacity:.35; cursor:grabbing; }
+  .card[data-priority="Alta"]{ border-left-color:var(--alta); }
+  .card[data-priority="Media"]{ border-left-color:var(--media); }
+  .card[data-priority="Baixa"]{ border-left-color:var(--baixa); }
+
+  .card-name{
+    font-size:13px; font-weight:600; color:var(--text);
+    margin:0 0 4px; line-height:1.35;
+  }
+  .card-desc{
+    font-size:12px; color:var(--text-dim); line-height:1.45; margin:0 0 9px;
+  }
+  .card-dates{
+    font-family:var(--mono); font-size:9.5px; color:var(--text-faint);
+    margin:0 0 8px; display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .card-dates .done{ color:var(--done); }
+  .card-meta{
+    display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;
+  }
+  .labels{ display:flex; flex-wrap:wrap; gap:5px; }
+  .label-chip{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.02em;
+    color:var(--text-dim); background:var(--border-soft);
+    border:1px solid var(--border); border-radius:4px;
+    padding:2px 6px;
+  }
+  .badges{ display:flex; gap:5px; align-items:center; }
+  .priority-badge{
+    font-family:var(--mono); font-size:9.5px; font-weight:600;
+    padding:2px 6px; border-radius:4px; white-space:nowrap;
+  }
+  .priority-badge[data-p="Alta"]{ color:var(--alta); background:rgba(255,107,107,0.1); }
+  .priority-badge[data-p="Media"]{ color:var(--media); background:rgba(255,184,77,0.1); }
+  .priority-badge[data-p="Baixa"]{ color:var(--baixa); background:rgba(94,184,255,0.1); }
+
+  .effort-badge{
+    font-family:var(--mono); font-size:9.5px;
+    color:var(--text-faint); border:1px solid var(--border);
+    border-radius:4px; padding:2px 6px; white-space:nowrap;
+  }
+  .effort-badge[data-e="Concluido"]{ color:var(--done); border-color:rgba(74,222,128,0.3); }
+
+  .hidden{ display:none !important; }
+
+  @media (max-width: 720px){
+    .topbar{ padding:12px 16px; }
+    .board{ padding:16px; }
+    .column{ flex:0 0 82vw; max-height:none; }
+    .controls{ width:100%; }
+    #search{ width:100%; }
+  }
+
+  :focus-visible{ outline:2px solid var(--baixa); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-line">
+      <span class="dot"></span>
+      <h1>SmartDocs<span class="sub">&nbsp;// roadmap.board</span></h1>
+    </div>
+    <span class="synced" id="synced-label"></span>
+  </div>
+  <div class="controls">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="buscar card..." />
+    </div>
+    <select id="filter-label"><option value="">todas as labels</option></select>
+    <select id="filter-priority">
+      <option value="">todas prioridades</option>
+      <option value="Alta">Alta</option>
+      <option value="Media">Média</option>
+      <option value="Baixa">Baixa</option>
+    </select>
+    <button class="btn accent" id="export-btn">↓ exportar</button>
+    <button class="btn accent" id="import-btn">↑ importar</button>
+    <input type="file" id="import-file" accept="application/json" class="hidden" />
+    <button class="btn danger" id="reset">↺ reset</button>
+  </div>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="board" id="board"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   Fonte de verdade do conteudo do roadmap.
+   Toda vez que um item for implementado de verdade no projeto,
+   atualizar aqui: effort -> "Concluido", completedAt -> data real.
+   A coluna atual de cada card (posicao no board) fica salva
+   separadamente no localStorage, entao editar isto aqui NUNCA
+   apaga o progresso/arrasto que voce ja fez no navegador.
+   ───────────────────────────────────────────────────────────── */
+const ROADMAP_UPDATED_AT = "2026-07-29";
+
+/* Itens extras descobertos durante o trabalho no Sprint 1, fora do
+   planejamento original mas resolvidos junto (bug real + ambiente). */
+const EXTRA_SPRINT1 = [
+  { id:"s1-jdk25-build-fix", list:"Sprint 1 - Higiene e Resiliencia", name:"Corrigir build para JDK 25", desc:"Lombok, Mockito/Byte Buddy e JaCoCo estavam desatualizados para o JDK 25 instalado localmente; nada compilava/testava sem isso", labels:["Backend","Infra"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s1-task-id-bug", list:"Sprint 1 - Higiene e Resiliencia", name:"Corrigir bug: ID de Task nulo", desc:"processDocument descartava o retorno de taskRepo.save() e chamava task.getId() em seguida, quebrando sempre que o repositório é mockado", labels:["Backend"], priority:"Media", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+];
+
+const ROADMAP = [
+  { id:"s0-auth-jwt", list:"Sprint 0 - Concluido", name:"Auth JWT", desc:"Login e filtro de validação de token JWT", labels:["Backend","Segurança"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-upload-pdf", list:"Sprint 0 - Concluido", name:"Upload de PDF com validação", desc:"Validação de tipo e tamanho de arquivo no upload", labels:["Backend"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-rabbitmq", list:"Sprint 0 - Concluido", name:"Processamento assíncrono via RabbitMQ", desc:"Fila de processamento de documentos", labels:["Backend","Infra"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-claude-api", list:"Sprint 0 - Concluido", name:"Integração com Claude API", desc:"Classificação e resumo automático do documento", labels:["Backend","IA"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-flyway", list:"Sprint 0 - Concluido", name:"Migrations Flyway + PostgreSQL", desc:"Versionamento de schema de banco", labels:["Backend"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-junit", list:"Sprint 0 - Concluido", name:"Testes unitários JUnit/Mockito", desc:"Cobertura de serviços principais", labels:["Qualidade"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-testcontainers", list:"Sprint 0 - Concluido", name:"Testes de integração Testcontainers", desc:"Testes contra banco real em container", labels:["Qualidade"], priority:"Alta", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-jacoco", list:"Sprint 0 - Concluido", name:"Cobertura JaCoCo", desc:"Gate de cobertura de testes configurado", labels:["Qualidade"], priority:"Media", effort:"Concluido", startedAt:"", completedAt:"" },
+  { id:"s0-swagger", list:"Sprint 0 - Concluido", name:"Swagger/OpenAPI", desc:"Documentação interativa da API", labels:["Backend"], priority:"Media", effort:"Concluido", startedAt:"", completedAt:"" },
+
+  { id:"s1-secrets", list:"Sprint 1 - Higiene e Resiliencia", name:"Remover segredos hardcoded", desc:"jwt.secret, senha do Postgres e do RabbitMQ saem do application.properties commitado; usar variáveis de ambiente + application.properties.example", labels:["Segurança"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s1-dlx", list:"Sprint 1 - Higiene e Resiliencia", name:"Dead Letter Exchange (DLX)", desc:"Configurar exchange/fila de DLQ no RabbitMQ com retry e backoff antes de descartar mensagem", labels:["Backend","Infra"], priority:"Alta", effort:"Medio", startedAt:"", completedAt:"" },
+  { id:"s1-reprocess", list:"Sprint 1 - Higiene e Resiliencia", name:"Endpoint de reprocessamento", desc:"POST /api/documents/{id}/reprocess reseta status para PENDING e republica na fila", labels:["Backend"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s1-actuator", list:"Sprint 1 - Higiene e Resiliencia", name:"Spring Actuator", desc:"Adicionar starter-actuator e endpoint /actuator/health", labels:["Backend","Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+
+  { id:"s2-ci-basico", list:"Sprint 2 - CI e Seguranca", name:"CI básico", desc:"GitHub Actions rodando mvn test a cada push/PR", labels:["DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s2-sca", list:"Sprint 2 - CI e Seguranca", name:"SCA - análise de dependências", desc:"Dependabot ou OWASP Dependency-Check no Maven escaneando pom.xml", labels:["Segurança","DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s2-sast", list:"Sprint 2 - CI e Seguranca", name:"SAST - análise estática", desc:"Semgrep Action no pipeline escaneando o código Java", labels:["Segurança","DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s2-dast", list:"Sprint 2 - CI e Seguranca", name:"DAST - análise dinâmica", desc:"OWASP ZAP baseline scan contra app subindo via docker-compose no CI", labels:["Segurança","DevOps"], priority:"Media", effort:"Medio", startedAt:"", completedAt:"" },
+  { id:"s2-badge-ci", list:"Sprint 2 - CI e Seguranca", name:"Badge de CI no README", desc:"Exibir status do pipeline no README", labels:["Documentação"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+
+  { id:"s3-dockerfile", list:"Sprint 3 - Empacotamento e Deploy", name:"Dockerfile da aplicação", desc:"Multi-stage build Maven -> JRE runtime", labels:["Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s3-compose", list:"Sprint 3 - Empacotamento e Deploy", name:"docker-compose completo", desc:"Unir app + Postgres + RabbitMQ com healthchecks", labels:["Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s3-deploy", list:"Sprint 3 - Empacotamento e Deploy", name:"Deploy público", desc:"Subir em ambiente acessível (Railway/Render/Fly.io)", labels:["Infra"], priority:"Media", effort:"Medio", startedAt:"", completedAt:"" },
+  { id:"s3-env-vars", list:"Sprint 3 - Empacotamento e Deploy", name:"Variáveis de produção documentadas", desc:"README com lista de env vars necessárias em produção", labels:["Documentação"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+
+  { id:"s4-isolar-extracao", list:"Sprint 4 - Sandbox de PDF", name:"Isolar extração de texto", desc:"Rodar extractText/countPages em subprocesso ou container efêmero com limite de CPU/memória", labels:["Segurança","Backend"], priority:"Media", effort:"Grande", startedAt:"", completedAt:"" },
+  { id:"s4-timeout", list:"Sprint 4 - Sandbox de PDF", name:"Timeout de processamento", desc:"Cancelar e marcar como ERROR se extração/análise passar de X segundos", labels:["Backend"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s4-magic-bytes", list:"Sprint 4 - Sandbox de PDF", name:"Validação de magic bytes", desc:"Validar assinatura real do arquivo (%PDF-) além da extensão .pdf", labels:["Segurança"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+
+  { id:"s5-sse-status", list:"Sprint 5 - Tempo Real", name:"SSE de status de documento", desc:"SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento", labels:["Backend"], priority:"Baixa", effort:"Medio", startedAt:"", completedAt:"" },
+  { id:"s5-sse-frontend", list:"Sprint 5 - Tempo Real", name:"Frontend consumindo SSE", desc:"Trocar polling manual do frontend mock por escuta de eventos", labels:["Frontend"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+
+  { id:"backlog-k8s", list:"Backlog - Planejado", name:"Kubernetes", desc:"Manifests e probes de liveness/readiness", labels:["Infra"], priority:"Baixa", effort:"Grande", startedAt:"", completedAt:"" },
+  { id:"backlog-analytics", list:"Backlog - Planejado", name:"Camada de analytics", desc:"Agregações e export CSV/Parquet", labels:["Backend"], priority:"Baixa", effort:"Grande", startedAt:"", completedAt:"" },
+  { id:"backlog-frontend-api", list:"Backlog - Planejado", name:"Frontend com API real", desc:"Remover dados mockados e consumir backend de verdade", labels:["Frontend"], priority:"Media", effort:"Grande", startedAt:"", completedAt:"" },
+].concat(EXTRA_SPRINT1);
+
+const LIST_ORDER = [
+  "Sprint 0 - Concluido",
+  "Sprint 1 - Higiene e Resiliencia",
+  "Sprint 2 - CI e Seguranca",
+  "Sprint 3 - Empacotamento e Deploy",
+  "Sprint 4 - Sandbox de PDF",
+  "Sprint 5 - Tempo Real",
+  "Backlog - Planejado",
+];
+
+const STORAGE_KEY = "smartdocs-kanban-state-v2";
+
+/* saved = apenas o que o USUARIO fez no navegador: posicao atual de
+   cada card (se ele arrastou pra outra coluna) e o historico de
+   movimentacoes/datas de conclusao capturadas por arrasto.
+   O conteudo (nome/desc/labels/prioridade/esforco/datas oficiais)
+   sempre vem do ROADMAP acima. */
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      return {
+        positions: parsed.positions || {},
+        history: parsed.history || {},
+        completedAt: parsed.completedAt || {},
+      };
+    }
+  }catch(e){}
+  return { positions:{}, history:{}, completedAt:{} };
+}
+function persist(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
+
+let saved = loadSaved();
+let filters = { search: "", label: "", priority: "" };
+
+/* ─────────────────────────────────────────────────────────────
+   Render
+   ───────────────────────────────────────────────────────────── */
+const board = document.getElementById("board");
+const statsEl = document.getElementById("stats");
+const labelSelect = document.getElementById("filter-label");
+const syncedLabel = document.getElementById("synced-label");
+
+syncedLabel.textContent = `roadmap atualizado em ${formatDate(ROADMAP_UPDATED_AT)}`;
+
+function allLabels(){
+  const set = new Set();
+  ROADMAP.forEach(c => c.labels.forEach(l => set.add(l)));
+  return [...set].sort();
+}
+
+function populateLabelFilter(){
+  const current = labelSelect.value;
+  labelSelect.innerHTML = '<option value="">todas as labels</option>' +
+    allLabels().map(l => `<option value="${l}">${l}</option>`).join("");
+  labelSelect.value = current;
+}
+
+function cardMatchesFilters(c){
+  if(filters.priority && c.priority !== filters.priority) return false;
+  if(filters.label && !c.labels.includes(filters.label)) return false;
+  if(filters.search){
+    const q = filters.search.toLowerCase();
+    const hay = (c.name + " " + c.desc + " " + c.labels.join(" ")).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function currentListOf(card){
+  return saved.positions[card.id] || card.list;
+}
+
+function firstMoveAt(cardId){
+  const h = saved.history[cardId];
+  return h && h.length ? h[0].at : null;
+}
+
+function completedAtOf(card){
+  return card.completedAt || saved.completedAt[card.id] || null;
+}
+
+function startedAtOf(card){
+  return card.startedAt || firstMoveAt(card.id) || null;
+}
+
+function formatDate(iso){
+  if(!iso) return null;
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric" });
+}
+
+function daysBetween(a, b){
+  return Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
+}
+
+function cardDatesHtml(card){
+  const started = startedAtOf(card);
+  const completed = completedAtOf(card);
+  if(!started && !completed) return "";
+  const parts = [];
+  if(started) parts.push(`iniciado ${formatDate(started)}`);
+  if(completed){
+    const days = started ? daysBetween(started, completed) : null;
+    parts.push(`<span class="done">concluído ${formatDate(completed)}${days!==null ? ` · ${days}d` : ""}</span>`);
+  }
+  return `<div class="card-dates">${parts.join("<span>·</span>")}</div>`;
+}
+
+function renderStats(){
+  const totalCards = ROADMAP.length;
+  const done = ROADMAP.filter(c => c.effort === "Concluido").length;
+  const alta = ROADMAP.filter(c => c.priority === "Alta").length;
+  statsEl.innerHTML = `
+    <span><b>${totalCards}</b> cards no total</span>
+    <span><span class="swatch" style="background:var(--done)"></span><b>${done}</b> concluídos</span>
+    <span><span class="swatch" style="background:var(--alta)"></span><b>${alta}</b> prioridade alta</span>
+    <span><b>${LIST_ORDER.length}</b> colunas</span>
+  `;
+}
+
+function renderCard(card){
+  const div = document.createElement("div");
+  div.className = "card";
+  div.draggable = true;
+  div.dataset.id = card.id;
+  div.dataset.priority = card.priority;
+  div.innerHTML = `
+    <p class="card-name">${escapeHtml(card.name)}</p>
+    <p class="card-desc">${escapeHtml(card.desc)}</p>
+    ${cardDatesHtml(card)}
+    <div class="card-meta">
+      <div class="labels">${card.labels.map(l=>`<span class="label-chip">${escapeHtml(l)}</span>`).join("")}</div>
+      <div class="badges">
+        <span class="priority-badge" data-p="${card.priority}">${card.priority}</span>
+        <span class="effort-badge" data-e="${card.effort}">${card.effort}</span>
+      </div>
+    </div>
+  `;
+  div.addEventListener("dragstart", e => {
+    div.classList.add("dragging");
+    e.dataTransfer.setData("text/plain", card.id);
+  });
+  div.addEventListener("dragend", () => div.classList.remove("dragging"));
+  return div;
+}
+
+function compBarFor(cards){
+  const total = cards.length || 1;
+  const counts = { Alta:0, Media:0, Baixa:0 };
+  cards.forEach(c => counts[c.priority] = (counts[c.priority]||0)+1);
+  return `
+    <div class="comp-bar">
+      ${counts.Alta ? `<span style="width:${counts.Alta/total*100}%;background:var(--alta)"></span>`:""}
+      ${counts.Media ? `<span style="width:${counts.Media/total*100}%;background:var(--media)"></span>`:""}
+      ${counts.Baixa ? `<span style="width:${counts.Baixa/total*100}%;background:var(--baixa)"></span>`:""}
+    </div>
+    <div class="comp-legend">
+      <span><em>${counts.Alta}</em> alta</span>
+      <span><em>${counts.Media}</em> média</span>
+      <span><em>${counts.Baixa}</em> baixa</span>
+    </div>
+  `;
+}
+
+function renderBoard(){
+  board.innerHTML = "";
+
+  LIST_ORDER.forEach(listId => {
+    const listCards = ROADMAP.filter(c => currentListOf(c) === listId);
+    const visibleCards = listCards.filter(cardMatchesFilters);
+
+    const col = document.createElement("div");
+    col.className = "column";
+    col.dataset.listId = listId;
+
+    col.innerHTML = `
+      <div class="col-head">
+        <div class="col-title-row">
+          <span class="col-title">${escapeHtml(listId)}</span>
+          <span class="col-count">${visibleCards.length}${visibleCards.length!==listCards.length ? "/"+listCards.length : ""}</span>
+        </div>
+        ${compBarFor(listCards)}
+      </div>
+      <div class="col-body"></div>
+    `;
+
+    const body = col.querySelector(".col-body");
+    if(visibleCards.length === 0){
+      body.innerHTML = `<div class="empty-slot">nenhum card aqui</div>`;
+    }else{
+      visibleCards.forEach(c => body.appendChild(renderCard(c)));
+    }
+
+    col.addEventListener("dragover", e => { e.preventDefault(); col.classList.add("drag-over"); });
+    col.addEventListener("dragleave", () => col.classList.remove("drag-over"));
+    col.addEventListener("drop", e => {
+      e.preventDefault();
+      col.classList.remove("drag-over");
+      const cardId = e.dataTransfer.getData("text/plain");
+      moveCard(cardId, listId);
+    });
+
+    board.appendChild(col);
+  });
+
+  renderStats();
+}
+
+function moveCard(cardId, targetListId){
+  const card = ROADMAP.find(c => c.id === cardId);
+  if(!card) return;
+
+  const prevList = currentListOf(card);
+  if(prevList === targetListId) return;
+
+  const now = new Date().toISOString();
+  saved.positions[cardId] = targetListId;
+  if(!saved.history[cardId]) saved.history[cardId] = [];
+  saved.history[cardId].push({ from: prevList, to: targetListId, at: now });
+
+  if(/conclu/i.test(targetListId) && !completedAtOf(card)){
+    saved.completedAt[cardId] = now;
+  }
+
+  persist();
+  renderBoard();
+}
+
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str ?? "";
+  return d.innerHTML;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Filtros / controles
+   ───────────────────────────────────────────────────────────── */
+document.getElementById("search").addEventListener("input", e => {
+  filters.search = e.target.value;
+  renderBoard();
+});
+document.getElementById("filter-label").addEventListener("change", e => {
+  filters.label = e.target.value;
+  renderBoard();
+});
+document.getElementById("filter-priority").addEventListener("change", e => {
+  filters.priority = e.target.value;
+  renderBoard();
+});
+document.getElementById("reset").addEventListener("click", () => {
+  if(confirm("Isso apaga suas movimentações manuais e datas capturadas por arrasto (o conteúdo do roadmap não muda). Continuar?")){
+    saved = { positions:{}, history:{}, completedAt:{} };
+    persist();
+    renderBoard();
+  }
+});
+
+/* ─────────────────────────────────────────────────────────────
+   Backup manual (export/import) — mais confiável que depender
+   só do localStorage, que pode ser limpo pelo navegador ou não
+   acompanhar o arquivo se ele for movido/copiado.
+   ───────────────────────────────────────────────────────────── */
+document.getElementById("export-btn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(saved, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `smartdocs-kanban-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+const importFileInput = document.getElementById("import-file");
+document.getElementById("import-btn").addEventListener("click", () => importFileInput.click());
+importFileInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      saved = {
+        positions: parsed.positions || {},
+        history: parsed.history || {},
+        completedAt: parsed.completedAt || {},
+      };
+      persist();
+      populateLabelFilter();
+      renderBoard();
+    }catch(err){
+      alert("Arquivo inválido.");
+    }
+  };
+  reader.readAsText(file);
+  importFileInput.value = "";
+});
+
+populateLabelFilter();
+renderBoard();
+</script>
+
+</body>
+</html>

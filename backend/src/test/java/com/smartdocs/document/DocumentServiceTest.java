@@ -5,6 +5,7 @@ import com.smartdocs.audit.AuditService;
 import com.smartdocs.auth.User;
 import com.smartdocs.auth.UserRepository;
 import com.smartdocs.messaging.DocumentProcessingProducer;
+import com.smartdocs.task.Task;
 import com.smartdocs.task.TaskRepository;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -194,6 +195,12 @@ class DocumentServiceTest {
         when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
         when(claudeService.analyzeDocument(any(), eq("contract-test.pdf")))
                 .thenReturn(analysis);
+        when(taskRepo.save(any(Task.class)))
+                .thenAnswer(invocation -> {
+                    Task task = invocation.getArgument(0);
+                    ReflectionTestUtils.setField(task, "id", UUID.randomUUID());
+                    return task;
+                });
 
         documentService.processDocument(documentId);
 

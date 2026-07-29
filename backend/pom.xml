@@ -25,6 +25,9 @@
 	<!-- Versions -->
 	<properties>
 		<java.version>21</java.version>
+		<lombok.version>1.18.42</lombok.version>
+		<mockito.version>5.19.0</mockito.version>
+		<byte-buddy.version>1.17.7</byte-buddy.version>
 		<jjwt.version>0.12.6</jjwt.version>
 		<pdfbox.version>3.0.3</pdfbox.version>
 		<springdoc.version>2.6.0</springdoc.version>
@@ -225,6 +228,13 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<release>21</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 
@@ -232,7 +242,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.12</version>
+				<version>0.8.14</version>
 				<executions>
 
 					<execution>

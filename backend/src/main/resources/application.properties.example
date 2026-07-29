@@ -1,0 +1,18 @@
+# Copie os valores reais para variaveis de ambiente antes de rodar em qualquer
+# lugar que nao seja sua maquina local com o docker-compose deste repo.
+# Nenhum destes valores deve ser commitado com dado real.
+
+# Banco de dados (default local bate com docker-compose.yml)
+DB_USERNAME=smartdocs
+DB_PASSWORD=smartdocs123
+
+# RabbitMQ (default local bate com docker-compose.yml)
+RABBITMQ_USERNAME=smartdocs
+RABBITMQ_PASSWORD=smartdocs123
+
+# JWT - gere um valor novo e aleatorio de pelo menos 32 bytes para producao.
+# Exemplo de geracao: openssl rand -base64 32
+JWT_SECRET=troque-este-valor-antes-de-subir-em-qualquer-ambiente-real
+
+# Claude API
+ANTHROPIC_API_KEY=sk-ant-sua-chave-aqui

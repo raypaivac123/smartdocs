@@ -118,7 +118,7 @@ public class DocumentService {
                                 .priority(Task.Priority.MEDIUM)
                                 .build();
 
-                        taskRepo.save(task);
+                        task = taskRepo.save(task);
 
                         auditService.log(
                                 "TASK_GEN",

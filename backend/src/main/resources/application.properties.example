@@ -5,10 +5,20 @@
 # Banco de dados (default local bate com docker-compose.yml)
 DB_USERNAME=smartdocs
 DB_PASSWORD=smartdocs123
+# Só precisa mudar se estiver fora do docker-compose (ex: rodando a app local
+# apontando pro banco de outro host, ou um Postgres gerenciado tipo Railway).
+# Dentro do compose isso vira "postgres".
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=smartdocs
 
 # RabbitMQ (default local bate com docker-compose.yml)
 RABBITMQ_USERNAME=smartdocs
 RABBITMQ_PASSWORD=smartdocs123
+# Mesma ideia do DB_HOST. Dentro do compose isso vira "rabbitmq".
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_VHOST=/
 
 # JWT - gere um valor novo e aleatorio de pelo menos 32 bytes para producao.
 # Exemplo de geracao: openssl rand -base64 32

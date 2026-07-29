@@ -221,7 +221,7 @@ class DocumentServiceTest {
     }
 
     @Test
-    void processDocumentShouldMarkDocumentAsErrorWhenAiFails() throws Exception {
+    void processDocumentShouldThrowWhenAiFailsSoRabbitMqCanRetry() throws Exception {
         UUID documentId = UUID.randomUUID();
         Path pdfPath = createBlankPdf("contract-with-error.pdf");
 
@@ -243,16 +243,60 @@ class DocumentServiceTest {
         when(claudeService.analyzeDocument(any(), eq("contract-with-error.pdf")))
                 .thenThrow(new RuntimeException("Simulated AI failure"));
 
-        documentService.processDocument(documentId);
+        assertThatThrownBy(() -> documentService.processDocument(documentId))
+                .isInstanceOf(DocumentProcessingException.class)
+                .hasCauseInstanceOf(RuntimeException.class);
 
-        assertThat(document.getStatus()).isEqualTo(Document.DocumentStatus.ERROR);
-        assertThat(document.getErrorMessage()).contains("Simulated AI failure");
+        assertThat(document.getStatus()).isEqualTo(Document.DocumentStatus.PENDING);
 
-        verify(documentRepo, times(1)).save(document);
+        verify(documentRepo, never()).save(any(Document.class));
         verify(claudeService, times(1)).analyzeDocument(any(), eq("contract-with-error.pdf"));
         verify(taskRepo, never()).save(any());
+        verify(auditService, never()).log(any(), any(), any(), any());
+    }
+
+    @Test
+    void markAsPermanentlyFailedShouldSetErrorStatusAndAudit() {
+        UUID documentId = UUID.randomUUID();
+        Document document = Document.builder()
+                .filename("contract.pdf")
+                .status(Document.DocumentStatus.PENDING)
+                .build();
+        ReflectionTestUtils.setField(document, "id", documentId);
+
+        when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
+
+        documentService.markAsPermanentlyFailed(documentId, "Processing failed after multiple retries");
+
+        assertThat(document.getStatus()).isEqualTo(Document.DocumentStatus.ERROR);
+        assertThat(document.getErrorMessage()).isEqualTo("Processing failed after multiple retries");
+
+        verify(documentRepo, times(1)).save(document);
         verify(auditService, times(1))
-                .log(eq("ERROR"), eq("Document"), eq(documentId.toString()), contains("Simulated AI failure"));
+                .log(eq("ERROR"), eq("Document"), eq(documentId.toString()), contains("retries exhausted"));
+    }
+
+    @Test
+    void reprocessShouldResetStatusToPendingAndRepublishToQueue() {
+        UUID documentId = UUID.randomUUID();
+        Document document = Document.builder()
+                .filename("contract.pdf")
+                .status(Document.DocumentStatus.ERROR)
+                .errorMessage("Simulated AI failure")
+                .build();
+        ReflectionTestUtils.setField(document, "id", documentId);
+
+        when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
+
+        Document result = documentService.reprocess(documentId);
+
+        assertThat(result.getStatus()).isEqualTo(Document.DocumentStatus.PENDING);
+        assertThat(result.getErrorMessage()).isNull();
+
+        verify(documentRepo, times(1)).save(document);
+        verify(auditService, times(1))
+                .log(eq("REPROCESS"), eq("Document"), eq(documentId.toString()), contains("contract.pdf"));
+        verify(documentProcessingProducer, times(1)).sendDocumentForProcessing(documentId);
     }
 
     private Path createBlankPdf(String filename) throws Exception {

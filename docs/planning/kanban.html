@@ -334,20 +334,20 @@ const ROADMAP = [
   { id:"s0-swagger", list:"Sprint 0 - Concluido", name:"Swagger/OpenAPI", desc:"Documentação interativa da API", labels:["Backend"], priority:"Media", effort:"Concluido", startedAt:"", completedAt:"" },
 
   { id:"s1-secrets", list:"Sprint 1 - Higiene e Resiliencia", name:"Remover segredos hardcoded", desc:"jwt.secret, senha do Postgres e do RabbitMQ saem do application.properties commitado; usar variáveis de ambiente + application.properties.example", labels:["Segurança"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
-  { id:"s1-dlx", list:"Sprint 1 - Higiene e Resiliencia", name:"Dead Letter Exchange (DLX)", desc:"Configurar exchange/fila de DLQ no RabbitMQ com retry e backoff antes de descartar mensagem", labels:["Backend","Infra"], priority:"Alta", effort:"Medio", startedAt:"", completedAt:"" },
-  { id:"s1-reprocess", list:"Sprint 1 - Higiene e Resiliencia", name:"Endpoint de reprocessamento", desc:"POST /api/documents/{id}/reprocess reseta status para PENDING e republica na fila", labels:["Backend"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s1-actuator", list:"Sprint 1 - Higiene e Resiliencia", name:"Spring Actuator", desc:"Adicionar starter-actuator e endpoint /actuator/health", labels:["Backend","Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s1-dlx", list:"Sprint 1 - Higiene e Resiliencia", name:"Dead Letter Exchange (DLX)", desc:"Configurar exchange/fila de DLQ no RabbitMQ com retry e backoff antes de descartar mensagem", labels:["Backend","Infra"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s1-reprocess", list:"Sprint 1 - Higiene e Resiliencia", name:"Endpoint de reprocessamento", desc:"POST /api/documents/{id}/reprocess reseta status para PENDING e republica na fila", labels:["Backend"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s1-actuator", list:"Sprint 1 - Higiene e Resiliencia", name:"Spring Actuator", desc:"Adicionar starter-actuator e endpoint /actuator/health", labels:["Backend","Infra"], priority:"Media", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
 
-  { id:"s2-ci-basico", list:"Sprint 2 - CI e Seguranca", name:"CI básico", desc:"GitHub Actions rodando mvn test a cada push/PR", labels:["DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s2-sca", list:"Sprint 2 - CI e Seguranca", name:"SCA - análise de dependências", desc:"Dependabot ou OWASP Dependency-Check no Maven escaneando pom.xml", labels:["Segurança","DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s2-sast", list:"Sprint 2 - CI e Seguranca", name:"SAST - análise estática", desc:"Semgrep Action no pipeline escaneando o código Java", labels:["Segurança","DevOps"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s2-dast", list:"Sprint 2 - CI e Seguranca", name:"DAST - análise dinâmica", desc:"OWASP ZAP baseline scan contra app subindo via docker-compose no CI", labels:["Segurança","DevOps"], priority:"Media", effort:"Medio", startedAt:"", completedAt:"" },
-  { id:"s2-badge-ci", list:"Sprint 2 - CI e Seguranca", name:"Badge de CI no README", desc:"Exibir status do pipeline no README", labels:["Documentação"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s2-ci-basico", list:"Sprint 2 - CI e Seguranca", name:"CI básico", desc:"GitHub Actions rodando mvn test a cada push/PR", labels:["DevOps"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s2-sca", list:"Sprint 2 - CI e Seguranca", name:"SCA - análise de dependências", desc:"Dependabot escaneando pom.xml (backend) e as GitHub Actions em busca de CVEs", labels:["Segurança","DevOps"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s2-sast", list:"Sprint 2 - CI e Seguranca", name:"SAST - análise estática", desc:"Semgrep (p/java, p/security-audit, p/secrets) no pipeline, com upload de SARIF pro GitHub code scanning", labels:["Segurança","DevOps"], priority:"Alta", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s2-dast", list:"Sprint 2 - CI e Seguranca", name:"DAST - análise dinâmica", desc:"OWASP ZAP baseline scan contra app subindo via docker compose --wait no CI, relatório como artefato", labels:["Segurança","DevOps"], priority:"Media", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s2-badge-ci", list:"Sprint 2 - CI e Seguranca", name:"Badge de CI no README", desc:"Exibir status do pipeline no README", labels:["Documentação"], priority:"Baixa", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
 
-  { id:"s3-dockerfile", list:"Sprint 3 - Empacotamento e Deploy", name:"Dockerfile da aplicação", desc:"Multi-stage build Maven -> JRE runtime", labels:["Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s3-compose", list:"Sprint 3 - Empacotamento e Deploy", name:"docker-compose completo", desc:"Unir app + Postgres + RabbitMQ com healthchecks", labels:["Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s3-deploy", list:"Sprint 3 - Empacotamento e Deploy", name:"Deploy público", desc:"Subir em ambiente acessível (Railway/Render/Fly.io)", labels:["Infra"], priority:"Media", effort:"Medio", startedAt:"", completedAt:"" },
-  { id:"s3-env-vars", list:"Sprint 3 - Empacotamento e Deploy", name:"Variáveis de produção documentadas", desc:"README com lista de env vars necessárias em produção", labels:["Documentação"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s3-dockerfile", list:"Sprint 3 - Empacotamento e Deploy", name:"Dockerfile da aplicação", desc:"Multi-stage build Maven -> JRE runtime, usuário não-root", labels:["Infra"], priority:"Media", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s3-compose", list:"Sprint 3 - Empacotamento e Deploy", name:"docker-compose completo", desc:"Unir app + Postgres + RabbitMQ com healthchecks", labels:["Infra"], priority:"Media", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
+  { id:"s3-deploy", list:"Sprint 3 - Empacotamento e Deploy", name:"Deploy público", desc:"Repositório pronto pro Railway (railway.json + guia em docs/deploy-railway.md); falta o usuário criar o projeto e conectar de fato", labels:["Infra"], priority:"Media", effort:"Medio", startedAt:"2026-07-29", completedAt:"" },
+  { id:"s3-env-vars", list:"Sprint 3 - Empacotamento e Deploy", name:"Variáveis de produção documentadas", desc:"README com lista de env vars necessárias em produção", labels:["Documentação"], priority:"Baixa", effort:"Concluido", startedAt:"2026-07-29", completedAt:"2026-07-29" },
 
   { id:"s4-isolar-extracao", list:"Sprint 4 - Sandbox de PDF", name:"Isolar extração de texto", desc:"Rodar extractText/countPages em subprocesso ou container efêmero com limite de CPU/memória", labels:["Segurança","Backend"], priority:"Media", effort:"Grande", startedAt:"", completedAt:"" },
   { id:"s4-timeout", list:"Sprint 4 - Sandbox de PDF", name:"Timeout de processamento", desc:"Cancelar e marcar como ERROR se extração/análise passar de X segundos", labels:["Backend"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
@@ -356,7 +356,11 @@ const ROADMAP = [
   { id:"s5-sse-status", list:"Sprint 5 - Tempo Real", name:"SSE de status de documento", desc:"SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento", labels:["Backend"], priority:"Baixa", effort:"Medio", startedAt:"", completedAt:"" },
   { id:"s5-sse-frontend", list:"Sprint 5 - Tempo Real", name:"Frontend consumindo SSE", desc:"Trocar polling manual do frontend mock por escuta de eventos", labels:["Frontend"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
 
-  { id:"backlog-k8s", list:"Backlog - Planejado", name:"Kubernetes", desc:"Manifests e probes de liveness/readiness", labels:["Infra"], priority:"Baixa", effort:"Grande", startedAt:"", completedAt:"" },
+  { id:"s6-k8s-manifests", list:"Sprint 6 - GitOps e Kubernetes", name:"Manifests base do Kubernetes", desc:"Deployment/Service/Ingress + probes de liveness/readiness, base pro Helm chart e pro Argo Application", labels:["Infra"], priority:"Baixa", effort:"Grande", startedAt:"", completedAt:"" },
+  { id:"s6-helm-chart", list:"Sprint 6 - GitOps e Kubernetes", name:"Helm chart do backend", desc:"Empacotar os manifests (deployment, service, configmap) num Helm chart parametrizável ao invés de YAML solto", labels:["Infra"], priority:"Media", effort:"Medio", startedAt:"", completedAt:"" },
+  { id:"s6-ci-publish-image", list:"Sprint 6 - GitOps e Kubernetes", name:"CI publicando imagem no registry", desc:"Estender o CI (GitHub Actions) pra buildar e publicar a imagem Docker a cada push na main", labels:["DevOps","Infra"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s6-config-repo", list:"Sprint 6 - GitOps e Kubernetes", name:"Repositório de config GitOps", desc:"Repositório separado só com os manifests/Helm values, versionando o estado desejado do cluster", labels:["Infra"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s6-argocd", list:"Sprint 6 - GitOps e Kubernetes", name:"ArgoCD sincronizando o cluster", desc:"Instalar ArgoCD (local via Minikube) e configurar Application apontando pro repo de config, com sync automático", labels:["Infra"], priority:"Baixa", effort:"Medio", startedAt:"", completedAt:"" },
   { id:"backlog-analytics", list:"Backlog - Planejado", name:"Camada de analytics", desc:"Agregações e export CSV/Parquet", labels:["Backend"], priority:"Baixa", effort:"Grande", startedAt:"", completedAt:"" },
   { id:"backlog-frontend-api", list:"Backlog - Planejado", name:"Frontend com API real", desc:"Remover dados mockados e consumir backend de verdade", labels:["Frontend"], priority:"Media", effort:"Grande", startedAt:"", completedAt:"" },
 ].concat(EXTRA_SPRINT1);
@@ -368,6 +372,7 @@ const LIST_ORDER = [
   "Sprint 3 - Empacotamento e Deploy",
   "Sprint 4 - Sandbox de PDF",
   "Sprint 5 - Tempo Real",
+  "Sprint 6 - GitOps e Kubernetes",
   "Backlog - Planejado",
 ];
 

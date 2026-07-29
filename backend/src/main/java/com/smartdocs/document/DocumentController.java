@@ -50,6 +50,13 @@ public class DocumentController {
         return ResponseEntity.ok(DocumentDto.from(doc, tasks));
     }
 
+    @PostMapping("/{id}/reprocess")
+    public ResponseEntity<DocumentDto> reprocess(@PathVariable UUID id) {
+        Document doc = service.reprocess(id);
+        List<Task> tasks = taskRepo.findByDocumentId(id);
+        return ResponseEntity.ok(DocumentDto.from(doc, tasks));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,6 +40,9 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtFilter;
     private final UserDetailsService userDetailsService;
 
+    @Value("${smartdocs.cors.allowed-origins}")
+    private String[] corsAllowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -52,7 +56,8 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/actuator/health/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authProvider())
@@ -64,11 +69,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfig() {
         var cfg = new CorsConfiguration();
 
-        cfg.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:80",
-                "http://localhost:3000"
-        ));
+        cfg.setAllowedOrigins(List.of(corsAllowedOrigins));
 
         cfg.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"

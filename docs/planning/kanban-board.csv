@@ -8,24 +8,28 @@ Sprint 0 - Concluido,Testes unitarios JUnit/Mockito,Cobertura de servicos princi
 Sprint 0 - Concluido,Testes de integracao Testcontainers,Testes contra banco real em container,Qualidade,Alta,Concluido
 Sprint 0 - Concluido,Cobertura JaCoCo,Gate de cobertura de testes configurado,Qualidade,Media,Concluido
 Sprint 0 - Concluido,Swagger/OpenAPI,Documentacao interativa da API,Backend,Media,Concluido
-Sprint 1 - Higiene e Resiliencia,Remover segredos hardcoded,"jwt.secret, senha do Postgres e do RabbitMQ saem do application.properties commitado; usar variaveis de ambiente + application.properties.example",Seguranca,Alta,Pequeno
-Sprint 1 - Higiene e Resiliencia,Dead Letter Exchange (DLX),Configurar exchange/fila de DLQ no RabbitMQ com retry e backoff antes de descartar mensagem,Backend;Infra,Alta,Medio
-Sprint 1 - Higiene e Resiliencia,Endpoint de reprocessamento,POST /api/documents/{id}/reprocess reseta status para PENDING e republica na fila,Backend,Alta,Pequeno
-Sprint 1 - Higiene e Resiliencia,Spring Actuator,Adicionar starter-actuator e endpoint /actuator/health,Backend;Infra,Media,Pequeno
-Sprint 2 - CI e Seguranca,CI basico,GitHub Actions rodando mvn test a cada push/PR,DevOps,Alta,Pequeno
-Sprint 2 - CI e Seguranca,SCA - analise de dependencias,Dependabot ou OWASP Dependency-Check no Maven escaneando pom.xml,Seguranca;DevOps,Alta,Pequeno
-Sprint 2 - CI e Seguranca,SAST - analise estatica,Semgrep Action no pipeline escaneando o codigo Java,Seguranca;DevOps,Alta,Pequeno
-Sprint 2 - CI e Seguranca,DAST - analise dinamica,OWASP ZAP baseline scan contra app subindo via docker-compose no CI,Seguranca;DevOps,Media,Medio
-Sprint 2 - CI e Seguranca,Badge de CI no README,Exibir status do pipeline no README,Documentacao,Baixa,Pequeno
-Sprint 3 - Empacotamento e Deploy,Dockerfile da aplicacao,Multi-stage build Maven -> JRE runtime,Infra,Media,Pequeno
-Sprint 3 - Empacotamento e Deploy,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Pequeno
+Sprint 1 - Higiene e Resiliencia,Remover segredos hardcoded,"jwt.secret, senha do Postgres e do RabbitMQ saem do application.properties commitado; usar variaveis de ambiente + application.properties.example",Seguranca,Alta,Concluido
+Sprint 1 - Higiene e Resiliencia,Dead Letter Exchange (DLX),Configurar exchange/fila de DLQ no RabbitMQ com retry e backoff antes de descartar mensagem,Backend;Infra,Alta,Concluido
+Sprint 1 - Higiene e Resiliencia,Endpoint de reprocessamento,POST /api/documents/{id}/reprocess reseta status para PENDING e republica na fila,Backend,Alta,Concluido
+Sprint 1 - Higiene e Resiliencia,Spring Actuator,Adicionar starter-actuator e endpoint /actuator/health,Backend;Infra,Media,Concluido
+Sprint 2 - CI e Seguranca,CI basico,GitHub Actions rodando mvn test a cada push/PR,DevOps,Alta,Concluido
+Sprint 2 - CI e Seguranca,SCA - analise de dependencias,Dependabot escaneando pom.xml (backend) e as GitHub Actions,Seguranca;DevOps,Alta,Concluido
+Sprint 2 - CI e Seguranca,SAST - analise estatica,Semgrep no pipeline com upload de SARIF pro GitHub code scanning,Seguranca;DevOps,Alta,Concluido
+Sprint 2 - CI e Seguranca,DAST - analise dinamica,"OWASP ZAP baseline scan contra app subindo via docker compose --wait no CI, relatorio como artefato",Seguranca;DevOps,Media,Concluido
+Sprint 2 - CI e Seguranca,Badge de CI no README,Exibir status do pipeline no README,Documentacao,Baixa,Concluido
+Sprint 3 - Empacotamento e Deploy,Dockerfile da aplicacao,"Multi-stage build Maven -> JRE runtime, usuario nao-root",Infra,Media,Concluido
+Sprint 3 - Empacotamento e Deploy,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Concluido
 Sprint 3 - Empacotamento e Deploy,Deploy publico,Subir em ambiente acessivel (Railway/Render/Fly.io),Infra,Media,Medio
-Sprint 3 - Empacotamento e Deploy,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Pequeno
+Sprint 3 - Empacotamento e Deploy,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Concluido
 Sprint 4 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande
 Sprint 4 - Sandbox de PDF,Timeout de processamento,Cancelar e marcar como ERROR se extracao/analise passar de X segundos,Backend,Media,Pequeno
 Sprint 4 - Sandbox de PDF,Validacao de magic bytes,Validar assinatura real do arquivo (%PDF-) alem da extensao .pdf,Seguranca,Alta,Pequeno
 Sprint 5 - Tempo Real,SSE de status de documento,SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento,Backend,Baixa,Medio
 Sprint 5 - Tempo Real,Frontend consumindo SSE,Trocar polling manual do frontend mock por escuta de eventos,Frontend,Baixa,Pequeno
-Backlog - Planejado,Kubernetes,Manifests e probes de liveness/readiness,Infra,Baixa,Grande
+Sprint 6 - GitOps e Kubernetes,Manifests base do Kubernetes,"Deployment/Service/Ingress + probes de liveness/readiness, base pro Helm chart e pro Argo Application",Infra,Baixa,Grande
+Sprint 6 - GitOps e Kubernetes,Helm chart do backend,"Empacotar os manifests (deployment, service, configmap) num Helm chart parametrizavel ao inves de YAML solto",Infra,Media,Medio
+Sprint 6 - GitOps e Kubernetes,CI publicando imagem no registry,Estender o CI (GitHub Actions) pra buildar e publicar a imagem Docker a cada push na main,DevOps;Infra,Media,Pequeno
+Sprint 6 - GitOps e Kubernetes,Repositorio de config GitOps,Repositorio separado so com os manifests/Helm values versionando o estado desejado do cluster,Infra,Baixa,Pequeno
+Sprint 6 - GitOps e Kubernetes,ArgoCD sincronizando o cluster,Instalar ArgoCD (local via Minikube) e configurar Application apontando pro repo de config com sync automatico,Infra,Baixa,Medio
 Backlog - Planejado,Camada de analytics,Agregacoes e export CSV/Parquet,Backend,Baixa,Grande
 Backlog - Planejado,Frontend com API real,Remover dados mockados e consumir backend de verdade,Frontend,Media,Grande

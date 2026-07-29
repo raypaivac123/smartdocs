@@ -1,5 +1,9 @@
 # SmartDocs
 
+[![CI](https://github.com/raypaivac123/smartdocs/actions/workflows/ci.yml/badge.svg)](https://github.com/raypaivac123/smartdocs/actions/workflows/ci.yml)
+[![SAST](https://github.com/raypaivac123/smartdocs/actions/workflows/sast.yml/badge.svg)](https://github.com/raypaivac123/smartdocs/actions/workflows/sast.yml)
+[![DAST](https://github.com/raypaivac123/smartdocs/actions/workflows/dast.yml/badge.svg)](https://github.com/raypaivac123/smartdocs/actions/workflows/dast.yml)
+
 SmartDocs is an AI-assisted document workflow platform built as a portfolio project for enterprise software roles. It focuses on document upload, asynchronous processing, auditability, task generation and a lightweight web interface.
 
 The project is organized as a fullstack repository:
@@ -41,6 +45,13 @@ SmartDocs models a more structured workflow:
 - Integration tests with PostgreSQL
 - JaCoCo coverage configuration
 - Static frontend demo with login, dashboard, documents, upload, tasks, audit and settings pages
+- Dead Letter Queue with automatic retry and exponential backoff for failed AI processing
+- Manual reprocessing endpoint for documents that ended up in an error state
+- Spring Boot Actuator health checks (with liveness/readiness probes)
+- Multi-stage Dockerfile and full docker-compose stack with healthchecks
+- CI/CD pipeline: automated tests, dependency scanning (SCA), static analysis (SAST) and
+  dynamic analysis (DAST) on every push/PR
+- Deploy-ready configuration for Railway
 
 ## Technologies
 
@@ -76,10 +87,22 @@ SmartDocs models a more structured workflow:
 
 ## Running Locally
 
-Start infrastructure from the repository root:
+### Option A — everything in Docker
+
+Builds the backend image and starts it together with Postgres and RabbitMQ:
 
 ```bash
-docker compose up -d
+docker compose up -d --build
+```
+
+### Option B — infra in Docker, backend from your IDE
+
+Useful while developing, since it skips rebuilding the image on every change.
+
+Start only Postgres and RabbitMQ:
+
+```bash
+docker compose up -d postgres rabbitmq
 ```
 
 Run the backend:
@@ -116,6 +139,30 @@ Demo frontend credentials:
 dev@smartdocs.de / demo123
 ```
 
+## Environment Variables
+
+Copy `backend/src/main/resources/application.properties.example` for the full list with
+comments. Summary of what needs to be set outside of local development:
+
+| Variable | Purpose | Local default |
+|---|---|---|
+| `DB_HOST` / `DB_PORT` / `DB_NAME` | Postgres connection | `localhost` / `5432` / `smartdocs` |
+| `DB_USERNAME` / `DB_PASSWORD` | Postgres credentials | `smartdocs` / `smartdocs123` |
+| `RABBITMQ_HOST` / `RABBITMQ_PORT` / `RABBITMQ_VHOST` | RabbitMQ connection | `localhost` / `5672` / `/` |
+| `RABBITMQ_USERNAME` / `RABBITMQ_PASSWORD` | RabbitMQ credentials | `smartdocs` / `smartdocs123` |
+| `JWT_SECRET` | Secret used to sign JWTs — generate a new random value (32+ bytes) for any real environment | dev-only placeholder |
+| `ANTHROPIC_API_KEY` | Claude API key used for document analysis | placeholder (AI calls will fail) |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated list of origins allowed to call the API | `http://localhost:5173,http://localhost:80,http://localhost:3000` |
+
+None of these have real secrets committed to the repository — production values must be
+injected via the hosting platform's environment/secret configuration.
+
+## Deployment
+
+The backend is deploy-ready for [Railway](https://railway.app) — `backend/Dockerfile` builds the
+image and `backend/railway.json` configures the build and healthcheck. Step-by-step guide:
+[`docs/deploy-railway.md`](docs/deploy-railway.md).
+
 ## Running Tests
 
 From `backend/`:
@@ -146,6 +193,12 @@ This project demonstrates:
 - Automated unit and integration testing
 - Local infrastructure with Docker Compose
 - Fullstack repository organization
+- Messaging resilience: Dead Letter Queue, automatic retry with exponential backoff, manual
+  reprocessing
+- CI/CD pipeline design: automated testing, SCA (Dependabot), SAST (Semgrep) and DAST
+  (OWASP ZAP) wired into GitHub Actions
+- Multi-stage Docker builds and container hardening (non-root user)
+- Production deployment readiness (environment-driven configuration, Railway)
 
 ## Roadmap
 
@@ -155,4 +208,5 @@ This project demonstrates:
 - Introduce a `DocumentAiAnalyzer` strategy interface
 - Add Azure Blob Storage support
 - Add Azure Document Intelligence as an optional analysis provider
-- Add CI with GitHub Actions
+- Isolate PDF text extraction in a sandboxed process (see Sprint 4 in `docs/planning/`)
+- GitOps deployment flow with Helm and Argo CD (see Sprint 6 in `docs/planning/`)

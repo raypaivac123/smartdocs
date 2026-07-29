@@ -87,69 +87,83 @@ public class DocumentService {
 
     @Transactional
     public void processDocument(UUID docId) {
-        documentRepo.findById(docId).ifPresent(doc -> {
-            try {
-                log.info("Processing document via RabbitMQ: {}", doc.getFilename());
+        Document doc = documentRepo.findById(docId).orElse(null);
 
-                String text = extractText(doc.getFilePath());
-                var analysis = claudeService.analyzeDocument(text, doc.getFilename());
+        if (doc == null) {
+            return;
+        }
 
-                doc.setClassification(parseClassification(analysis.classification()));
-                doc.setExtractedFields(
-                        analysis.extractedFields() != null
-                                ? analysis.extractedFields()
-                                : java.util.Map.of()
-                );
-                doc.setSummary(analysis.summary());
-                doc.setStatus(Document.DocumentStatus.PROCESSED);
-                doc.setProcessedAt(Instant.now());
-                doc.setPageCount(countPages(doc.getFilePath()));
+        try {
+            log.info("Processing document via RabbitMQ: {}", doc.getFilename());
 
-                documentRepo.save(doc);
+            String text = extractText(doc.getFilePath());
+            var analysis = claudeService.analyzeDocument(text, doc.getFilename());
 
-                if (analysis.tasks() != null) {
-                    Document saved = doc;
+            doc.setClassification(parseClassification(analysis.classification()));
+            doc.setExtractedFields(
+                    analysis.extractedFields() != null
+                            ? analysis.extractedFields()
+                            : java.util.Map.of()
+            );
+            doc.setSummary(analysis.summary());
+            doc.setStatus(Document.DocumentStatus.PROCESSED);
+            doc.setErrorMessage(null);
+            doc.setProcessedAt(Instant.now());
+            doc.setPageCount(countPages(doc.getFilePath()));
 
-                    analysis.tasks().forEach(title -> {
-                        Task task = Task.builder()
-                                .title(title)
-                                .document(saved)
-                                .status(Task.TaskStatus.PENDING)
-                                .priority(Task.Priority.MEDIUM)
-                                .build();
+            documentRepo.save(doc);
 
-                        task = taskRepo.save(task);
+            if (analysis.tasks() != null) {
+                Document saved = doc;
 
-                        auditService.log(
-                                "TASK_GEN",
-                                "Task",
-                                task.getId().toString(),
-                                "Task automatically created from document " + saved.getId()
-                        );
-                    });
-                }
+                analysis.tasks().forEach(title -> {
+                    Task task = Task.builder()
+                            .title(title)
+                            .document(saved)
+                            .status(Task.TaskStatus.PENDING)
+                            .priority(Task.Priority.MEDIUM)
+                            .build();
 
-                auditService.log(
-                        "PROCESSED",
-                        "Document",
-                        doc.getId().toString(),
-                        "AI analysis: " + analysis.classification()
-                );
-            } catch (Exception e) {
-                log.error("Error processing document {}: {}", docId, e.getMessage());
+                    task = taskRepo.save(task);
 
-                doc.setStatus(Document.DocumentStatus.ERROR);
-                doc.setErrorMessage(e.getMessage());
-
-                documentRepo.save(doc);
-
-                auditService.log(
-                        "ERROR",
-                        "Document",
-                        docId.toString(),
-                        "Failure: " + e.getMessage()
-                );
+                    auditService.log(
+                            "TASK_GEN",
+                            "Task",
+                            task.getId().toString(),
+                            "Task automatically created from document " + saved.getId()
+                    );
+                });
             }
+
+            auditService.log(
+                    "PROCESSED",
+                    "Document",
+                    doc.getId().toString(),
+                    "AI analysis: " + analysis.classification()
+            );
+        } catch (Exception e) {
+            log.warn("Error processing document {} (RabbitMQ will retry): {}", docId, e.getMessage());
+
+            throw new DocumentProcessingException(
+                    "Failed to process document " + docId, e
+            );
+        }
+    }
+
+    @Transactional
+    public void markAsPermanentlyFailed(UUID docId, String reason) {
+        documentRepo.findById(docId).ifPresent(doc -> {
+            doc.setStatus(Document.DocumentStatus.ERROR);
+            doc.setErrorMessage(reason);
+
+            documentRepo.save(doc);
+
+            auditService.log(
+                    "ERROR",
+                    "Document",
+                    docId.toString(),
+                    "Failure after retries exhausted: " + reason
+            );
         });
     }
 
@@ -217,6 +231,27 @@ public class DocumentService {
         }
 
         return document;
+    }
+
+    @Transactional
+    public Document reprocess(UUID id) {
+        Document doc = findById(id);
+
+        doc.setStatus(Document.DocumentStatus.PENDING);
+        doc.setErrorMessage(null);
+
+        documentRepo.save(doc);
+
+        auditService.log(
+                "REPROCESS",
+                "Document",
+                id.toString(),
+                "Reprocessing requested for " + doc.getFilename()
+        );
+
+        documentProcessingProducer.sendDocumentForProcessing(id);
+
+        return doc;
     }
 
     @Transactional

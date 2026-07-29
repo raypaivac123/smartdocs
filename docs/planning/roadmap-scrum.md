@@ -25,6 +25,8 @@
 
 Objetivo: eliminar o risco de segurança mais óbvio do repo e resolver o ponto que motivou essa lista inteira — hoje uma falha da Claude API mata o documento pra sempre, sem segunda chance.
 
+> Progresso (29/07/2026): Sprint 1 completo — segredos, DLX, reprocessamento e Spring Actuator implementados.
+
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
 | 1 | Remover segredos hardcoded | `jwt.secret`, senha do Postgres e do RabbitMQ saem do `application.properties` commitado; usar variáveis de ambiente + `application.properties.example` | P | Alta |
@@ -40,6 +42,8 @@ Objetivo: eliminar o risco de segurança mais óbvio do repo e resolver o ponto 
 
 Objetivo: transformar os tópicos de segurança que você quer levar pra entrevista em algo que existe de verdade no repo, não só em discurso.
 
+> Progresso (29/07/2026): Sprint 2 completo — CI básico, SCA (Dependabot), SAST (Semgrep), DAST (OWASP ZAP baseline) e badge no README.
+
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
 | 1 | CI básico | GitHub Actions rodando `mvn test` a cada push/PR | P | Alta |
@@ -51,6 +55,8 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 ---
 
 ## Sprint 3 — Empacotamento & Deploy
+
+> Progresso (29/07/2026): Dockerfile, docker-compose completo e variáveis de produção documentadas prontos. Deploy público: repositório já preparado pro Railway (`backend/railway.json` + [`docs/deploy-railway.md`](deploy-railway.md)) — falta o usuário criar o projeto no Railway e conectar de fato.
 
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
@@ -82,9 +88,22 @@ Objetivo: hoje qualquer PDF enviado é parseado direto no processo da aplicaçã
 
 ---
 
+## Sprint 6 — GitOps e Kubernetes
+
+Objetivo: sair do "deploy manual" (Sprint 3) para um fluxo onde o estado do cluster é descrito em Git e sincronizado automaticamente. Depende do CI do Sprint 2 e do Dockerfile do Sprint 3 já existirem — não faz sentido começar por aqui.
+
+| # | Item | Descrição | Esforço | Prioridade |
+|---|------|-----------|---------|------------|
+| 1 | Manifests base do Kubernetes | Deployment/Service/Ingress + probes de liveness/readiness, base pro Helm chart e pro Argo Application | G | Baixa |
+| 2 | Helm chart do backend | Empacotar os manifests (deployment, service, configmap) num Helm chart parametrizável, ao invés de YAML solto | M | Média |
+| 3 | CI publicando imagem no registry | Estender o CI (GitHub Actions) pra buildar e publicar a imagem Docker a cada push na main | P | Média |
+| 4 | Repositório de config GitOps | Repositório separado só com os manifests/Helm values, versionando o estado desejado do cluster | P | Baixa |
+| 5 | ArgoCD sincronizando o cluster | Instalar ArgoCD (local via Minikube) e configurar Application apontando pro repo de config, com sync automático | M | Baixa |
+
+---
+
 ## Backlog / Planejado (sem sprint definida)
 
-- Kubernetes (manifests + probes de liveness/readiness)
 - Camada de analytics (agregações, export CSV/Parquet)
 - Frontend consumindo a API real (remover dados mockados)
 

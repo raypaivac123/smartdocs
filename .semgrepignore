@@ -1,0 +1,9 @@
+# Flyway migrations that already shipped (applied to real databases) are
+# immutable — editing them to add a "nosemgrep" comment would change their
+# file checksum and break Flyway's validation on any environment where they
+# already ran. Excluded here instead of inline.
+#
+# Both contain a bcrypt hash of the intentionally-public demo password
+# (see README.md "Demo frontend credentials"), not a real leaked credential.
+backend/src/main/resources/db/migration/V1__initial_schema.sql
+backend/src/main/resources/db/migration/V2__fix_demo_user_password.sql

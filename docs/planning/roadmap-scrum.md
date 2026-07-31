@@ -60,12 +60,14 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 > Progresso (31/07/2026): decisão trocada de Railway (trial de $5/30 dias, depois pago) para stack 100% gratuita permanente: Render (backend, dorme após 15min ocioso) + Neon (Postgres, sem cartão) + CloudAMQP (RabbitMQ, plano Little Lemur). Também criada a interface `DocumentAiAnalyzer` (`backend/src/main/java/com/smartdocs/ai/`) com duas implementações — `ClaudeService` (padrão) e `GroqAiAnalyzer` (gratuito, sem cartão, usado no deploy de demonstração) — selecionável via `AI_PROVIDER=claude|groq`.
 >
 > Progresso (31/07/2026, mais tarde): simplificado pra **uma só** implementação — `ClaudeService` removido, `GroqAiAnalyzer` (Llama 3.3 70B via Groq) vira a única forma de análise de IA, sem alternância por env var. Motivo: manter duas implementações em paralelo sem necessidade real (o deploy de demonstração já usava só a gratuita mesmo) estava virando complexidade acidental — melhor um caminho único e bem definido do que dois "meio-usados".
+>
+> Progresso (31/07/2026, mais tarde ainda): preparado o repositório pro deploy de verdade — `render.yaml` na raiz + `docs/deploy-render.md`. No caminho, achado que faltava suporte a SSL: o Neon exige `sslmode=require` na URL JDBC e o CloudAMQP (AMQPS) exige `spring.rabbitmq.ssl.enabled=true` + porta `5671`; nenhum dos dois existia antes. Adicionado via `DB_SSLMODE` e `RABBITMQ_SSL_ENABLED`, com default seguro pro ambiente local (`disable`/`false`) pra não quebrar o `docker-compose.yml`. Validado com `docker compose up --wait` depois da mudança.
 
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
 | 1 | Dockerfile da aplicação | Multi-stage build (Maven build → JRE runtime) | P | Média |
 | 2 | docker-compose completo | Unir app + Postgres + RabbitMQ num único compose, com healthchecks | P | Média |
-| 3 | Deploy público gratuito | Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) — sem cartão, sem prazo de trial | M | Média |
+| 3 | Deploy público gratuito | Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) — `render.yaml` + guia prontos, falta criar as contas | M | Média |
 | 4 | Variáveis de produção documentadas | README com lista de env vars necessárias em produção | P | Baixa |
 | 5 | Abstração de provedor de IA | Interface `DocumentAiAnalyzer` + implementação `GroqAiAnalyzer` (Llama 3.3 70B via Groq, gratuita) como única forma de análise | M | Alta |
 

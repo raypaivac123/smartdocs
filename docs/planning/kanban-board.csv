@@ -19,7 +19,7 @@ Sprint 2 - CI e Seguranca,DAST - analise dinamica,"OWASP ZAP baseline scan contr
 Sprint 2 - CI e Seguranca,Badge de CI no README,Exibir status do pipeline no README,Documentacao,Baixa,Concluido
 Sprint 3 - Empacotamento e Deploy,Dockerfile da aplicacao,"Multi-stage build Maven -> JRE runtime, usuario nao-root",Infra,Media,Concluido
 Sprint 3 - Empacotamento e Deploy,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Concluido
-Sprint 3 - Empacotamento e Deploy,Deploy publico gratuito,Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) - sem cartao sem prazo de trial,Infra,Media,Medio
+Sprint 3 - Empacotamento e Deploy,Deploy publico gratuito,"render.yaml + guia prontos (docs/deploy-render.md); falta criar as contas Render/Neon/CloudAMQP e conectar",Infra,Media,Medio
 Sprint 3 - Empacotamento e Deploy,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Concluido
 Sprint 3 - Empacotamento e Deploy,Abstracao de provedor de IA,"Interface DocumentAiAnalyzer + implementacao GroqAiAnalyzer (Llama 3.3 70B via Groq, gratuita) como unica forma de analise - ClaudeService removido pra simplificar",Backend,Alta,Concluido
 Sprint 4 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande

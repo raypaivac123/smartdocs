@@ -11,6 +11,8 @@ DB_PASSWORD=smartdocs123
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=smartdocs
+# Só necessário contra um Postgres gerenciado que exige TLS (ex: Neon):
+# DB_SSLMODE=require
 
 # RabbitMQ (default local bate com docker-compose.yml)
 RABBITMQ_USERNAME=smartdocs
@@ -19,6 +21,9 @@ RABBITMQ_PASSWORD=smartdocs123
 RABBITMQ_HOST=localhost
 RABBITMQ_PORT=5672
 RABBITMQ_VHOST=/
+# Só necessário contra um RabbitMQ gerenciado que exige AMQPS (ex: CloudAMQP -
+# nesse caso RABBITMQ_PORT também vira 5671):
+# RABBITMQ_SSL_ENABLED=true
 
 # JWT - gere um valor novo e aleatorio de pelo menos 32 bytes para producao.
 # Exemplo de geracao: openssl rand -base64 32

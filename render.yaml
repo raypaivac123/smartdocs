@@ -1,0 +1,52 @@
+services:
+  - name: smartdocs-backend
+    type: web
+    runtime: docker
+    plan: free
+    rootDir: ./backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      # Gerado automaticamente pelo Render, não precisa preencher
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Groq (Llama 3.3 70B) - https://console.groq.com
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+
+      # Postgres gerenciado no Neon (https://neon.tech) - preencher no
+      # dashboard do Render depois de criar o projeto no Neon
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+
+      # RabbitMQ gerenciado no CloudAMQP (https://cloudamqp.com, plano
+      # Little Lemur) - preencher no dashboard do Render
+      - key: RABBITMQ_HOST
+        sync: false
+      - key: RABBITMQ_PORT
+        value: "5671"
+      - key: RABBITMQ_VHOST
+        sync: false
+      - key: RABBITMQ_USERNAME
+        sync: false
+      - key: RABBITMQ_PASSWORD
+        sync: false
+      - key: RABBITMQ_SSL_ENABLED
+        value: "true"
+
+      # URL pública do frontend, depois que ele também estiver hospedado
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

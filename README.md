@@ -10,8 +10,8 @@ The project is organized as a fullstack repository:
 
 ```text
 smartdocs/
-  backend/         Spring Boot API
-  frontend-react/  React + TypeScript SPA (Vite)
+  backend/         Spring Boot API           → backend/README.md
+  frontend-react/  React + TypeScript SPA    → frontend-react/README.md
 ```
 
 ## Why This Project Exists
@@ -100,34 +100,13 @@ docker compose up -d --build
 
 Useful while developing, since it skips rebuilding the image on every change.
 
-Start only Postgres and RabbitMQ:
-
 ```bash
 docker compose up -d postgres rabbitmq
 ```
 
-Run the backend:
-
-```bash
-cd backend
-mvnw.cmd spring-boot:run
-```
-
-On Linux/macOS:
-
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
-Run the frontend:
-
-```bash
-cd frontend-react
-npm install
-cp .env.example .env
-npm run dev
-```
+Then run the backend and frontend separately — see
+[`backend/README.md`](backend/README.md#running-locally) and
+[`frontend-react/README.md`](frontend-react/README.md#running-locally).
 
 Open:
 
@@ -163,25 +142,13 @@ injected via the hosting platform's environment/secret configuration.
 
 ## Deployment
 
-The backend is containerized (`backend/Dockerfile`) and ready to run on any platform that
-accepts a Docker image. The current deployment plan is a free-tier stack — Render (backend),
-Neon (Postgres) and CloudAMQP (RabbitMQ) — but that isn't wired up in this repository yet.
-See Sprint 3 in [`docs/planning/roadmap-scrum.md`](docs/planning/roadmap-scrum.md) for the
-up-to-date plan.
+Deploy-ready for a permanently free stack: Render (backend), Neon (Postgres) and CloudAMQP
+(RabbitMQ). `render.yaml` at the repo root configures the Render Blueprint against
+`backend/Dockerfile`. Step-by-step guide: [`docs/deploy-render.md`](docs/deploy-render.md).
 
 ## Running Tests
 
-From `backend/`:
-
-```bash
-mvnw.cmd test
-```
-
-On Linux/macOS:
-
-```bash
-./mvnw test
-```
+See [`backend/README.md`](backend/README.md#running-tests).
 
 ## Portfolio Highlights
 

@@ -1,32 +1,41 @@
-# React + TypeScript + Vite
+# SmartDocs Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript SPA for SmartDocs, built with Vite. For the project pitch and how to run the
+whole stack, see the [root README](../README.md).
 
-Currently, two official plugins are available:
+## Pages
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Login, then behind the app shell (sidebar navigation, collapses to a drawer under ~900px):
+Dashboard, Documents, Upload, Tasks, Audit, Settings (`src/pages/`, routed in `src/App.tsx`).
 
-## React Compiler
+## Talking to the backend
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`src/lib/api.ts` wraps `fetch` against `VITE_API_URL` (defaults to `http://localhost:8080`),
+attaching the JWT from `src/lib/auth.ts` as a `Bearer` token on every request. All core flows
+(login, documents, upload, tasks, audit) hit the real backend API — nothing is mocked there.
+Widgets with no backing aggregation endpoint yet (e.g. the dashboard's weekly chart) are explicitly
+labeled "demo data" in the UI rather than presented as real.
 
-## Expanding the Oxlint configuration
+## Running locally
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+cp .env.example .env   # set VITE_API_URL if the backend isn't on localhost:8080
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Requires the backend running (see the root README) — this app has no data of its own.
+
+## Scripts
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Start the Vite dev server (default: `http://localhost:5173`) |
+| `npm run build` | Type-check (`tsc -b`) and build for production |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run Oxlint |
+
+## Stack
+
+React 19, TypeScript, Vite, react-router-dom. No UI framework/component library — styling is
+plain CSS (`src/styles/global.css`).

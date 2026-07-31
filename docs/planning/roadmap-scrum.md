@@ -56,14 +56,16 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 
 ## Sprint 3 — Empacotamento & Deploy
 
-> Progresso (29/07/2026): Dockerfile, docker-compose completo e variáveis de produção documentadas prontos. Deploy público: repositório já preparado pro Railway (`backend/railway.json` + [`docs/deploy-railway.md`](deploy-railway.md)) — falta o usuário criar o projeto no Railway e conectar de fato.
+> Progresso (29/07/2026): Dockerfile, docker-compose completo e variáveis de produção documentadas prontos.
+> Progresso (31/07/2026): decisão trocada de Railway (trial de $5/30 dias, depois pago) para stack 100% gratuita permanente: Render (backend, dorme após 15min ocioso) + Neon (Postgres, sem cartão) + CloudAMQP (RabbitMQ, plano Little Lemur). Também criada a interface `DocumentAiAnalyzer` (`backend/src/main/java/com/smartdocs/ai/`) com duas implementações — `ClaudeService` (padrão) e `GroqAiAnalyzer` (gratuito, sem cartão, usado no deploy de demonstração) — selecionável via `AI_PROVIDER=claude|groq`.
 
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
 | 1 | Dockerfile da aplicação | Multi-stage build (Maven build → JRE runtime) | P | Média |
 | 2 | docker-compose completo | Unir app + Postgres + RabbitMQ num único compose, com healthchecks | P | Média |
-| 3 | Deploy público | Subir em ambiente acessível (Railway/Render/Fly.io) pra recrutador testar sem rodar local | M | Média |
+| 3 | Deploy público gratuito | Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) — sem cartão, sem prazo de trial | M | Média |
 | 4 | Variáveis de produção documentadas | README com lista de env vars necessárias em produção | P | Baixa |
+| 5 | Abstração de provedor de IA | Interface `DocumentAiAnalyzer` + implementação `GroqAiAnalyzer` (gratuita) ao lado do `ClaudeService` existente | M | Alta |
 
 ---
 
@@ -102,10 +104,65 @@ Objetivo: sair do "deploy manual" (Sprint 3) para um fluxo onde o estado do clus
 
 ---
 
+## Sprint 7 — Deploy na AWS
+
+Objetivo: Railway (Sprint 3) já resolve "ter um link público rápido". Esse sprint é diferente — o
+objetivo é experiência de verdade com a nuvem que mais aparece em vaga (EC2/ECS/RDS/VPC/IAM), feita
+com calma, não espremida num deploy de fim de semana. Serve de base pra também hospedar o projeto de
+dados (`docs/planning/data-pipeline-project-idea.md`) mais pra frente (S3 como data lake, etc.).
+
+| # | Item | Descrição | Esforço | Prioridade |
+|---|------|-----------|---------|------------|
+| 1 | IAM básico | Usuário/role dedicado com permissão mínima necessária (least privilege), nunca usar a conta root pra deploy | P | Alta |
+| 2 | RDS PostgreSQL | Banco gerenciado na AWS substituindo o Postgres local, em vez de reaproveitar o do Railway | M | Alta |
+| 3 | VPC e Security Groups | Rede isolada pro banco (sem IP público) e regras de firewall explícitas liberando só o necessário pro backend | M | Média |
+| 4 | ECS Fargate | Rodar o mesmo container do `backend/Dockerfile` já existente em Fargate, sem gerenciar servidor (EC2) diretamente | G | Alta |
+| 5 | Application Load Balancer | Expor o serviço do ECS publicamente com HTTPS | M | Média |
+| 6 | Documentar custo e teardown | Free tier usado, e passo a passo de como derrubar tudo (`terraform destroy` ou manual) pra não gerar cobrança inesperada | P | Alta |
+
+---
+
+## Sprint 8 — Frontend em React
+
+> Progresso (31/07/2026): reescrita completa em `frontend-react/` (Vite + React 19 + TypeScript),
+> responsiva (sidebar vira drawer em telas < 900px). `frontend/` (HTML/JS puro) **removido** — o
+> React já conecta na API real (login JWT, documentos, upload, tasks, audit); só os widgets sem
+> endpoint de agregação (gráfico semanal, fila de IA) ficam marcados como "demo data" na própria UI.
+>
+> Bugs reais encontrados testando ponta a ponta: (1) a senha seedada do usuário de demo
+> (`dev@smartdocs.de`) não batia com "demo123" anunciado no README — corrigido via
+> `V2__fix_demo_user_password.sql`; (2) o `RestTemplate` do `ClaudeService`/`GroqAiAnalyzer` não
+> tinha timeout — uma chamada de IA travada bloqueia a thread do RabbitMQ pra sempre e nunca aciona
+> o retry/DLX, porque o retry só reage a exceção lançada, não a travamento. Corrigido com
+> connect/read timeout em `AppConfig`.
+
+| # | Item | Descrição | Esforço | Prioridade |
+|---|------|-----------|---------|------------|
+| 1 | Reescrever em React + TypeScript | 6 páginas + login migradas para componentes | G | Média |
+| 2 | Responsividade | Sidebar em drawer, grids que colapsam, tabelas com scroll horizontal em telas pequenas | M | Alta |
+| 3 | Conectar API real | Login JWT, documentos, upload, tasks e audit consumindo o backend de verdade | G | Média |
+| 4 | Corrigir senha do usuário de demo | Hash seedado na V1 não batia com "demo123"; corrigido via migration V2 | P | Alta |
+| 5 | Timeout no cliente HTTP de IA | `RestTemplate` sem timeout travava a thread do consumer e impedia o retry/DLX de agir | P | Alta |
+
+---
+
+## Sprint 9 — Site de Apresentação (Landing Page)
+
+Objetivo: hoje quem abre o app cai direto na tela de login — não existe nenhuma página pública
+explicando o que é o SmartDocs antes de autenticar. Um site de apresentação (institucional, sem
+precisar de login) ajuda tanto recrutador quanto usuário real a entender a solução antes de entrar.
+
+| # | Item | Descrição | Esforço | Prioridade |
+|---|------|-----------|---------|------------|
+| 1 | Landing page pública | Página em `/` explicando o problema, a solução e o fluxo (upload → IA → tasks), com CTA pro login | M | Média |
+| 2 | Multi-idioma | Suporte a mais de um idioma (pelo menos PT-BR e EN) — mostra que a solução é pensada pra além de um único mercado | M | Média |
+| 3 | Screenshots/demo visual | Prints ou GIF curto do dashboard/upload real, não só texto | P | Baixa |
+
+---
+
 ## Backlog / Planejado (sem sprint definida)
 
 - Camada de analytics (agregações, export CSV/Parquet)
-- Frontend consumindo a API real (remover dados mockados)
 
 ---
 

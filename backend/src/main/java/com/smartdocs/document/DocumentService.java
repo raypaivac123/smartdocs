@@ -1,6 +1,6 @@
 package com.smartdocs.document;
 
-import com.smartdocs.ai.ClaudeService;
+import com.smartdocs.ai.DocumentAiAnalyzer;
 import com.smartdocs.audit.AuditService;
 import com.smartdocs.auth.User;
 import com.smartdocs.auth.UserRepository;
@@ -41,7 +41,7 @@ public class DocumentService {
     private final DocumentRepository documentRepo;
     private final TaskRepository taskRepo;
     private final UserRepository userRepo;
-    private final ClaudeService claudeService;
+    private final DocumentAiAnalyzer aiAnalyzer;
     private final AuditService auditService;
     private final DocumentProcessingProducer documentProcessingProducer;
 
@@ -97,7 +97,7 @@ public class DocumentService {
             log.info("Processing document via RabbitMQ: {}", doc.getFilename());
 
             String text = extractText(doc.getFilePath());
-            var analysis = claudeService.analyzeDocument(text, doc.getFilename());
+            var analysis = aiAnalyzer.analyzeDocument(text, doc.getFilename());
 
             doc.setClassification(parseClassification(analysis.classification()));
             doc.setExtractedFields(

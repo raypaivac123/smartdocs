@@ -1,6 +1,6 @@
 package com.smartdocs.document;
 
-import com.smartdocs.ai.ClaudeService;
+import com.smartdocs.ai.DocumentAiAnalyzer;
 import com.smartdocs.audit.AuditService;
 import com.smartdocs.auth.User;
 import com.smartdocs.auth.UserRepository;
@@ -50,7 +50,7 @@ class DocumentServiceTest {
     private UserRepository userRepo;
 
     @Mock
-    private ClaudeService claudeService;
+    private DocumentAiAnalyzer aiAnalyzer;
 
     @Mock
     private AuditService auditService;
@@ -181,8 +181,8 @@ class DocumentServiceTest {
                 .build();
         ReflectionTestUtils.setField(document, "id", documentId);
 
-        ClaudeService.DocumentAnalysis analysis =
-                new ClaudeService.DocumentAnalysis(
+        DocumentAiAnalyzer.DocumentAnalysis analysis =
+                new DocumentAiAnalyzer.DocumentAnalysis(
                         "CONTRACT",
                         Map.of(
                                 "customer", "ACME GmbH",
@@ -193,7 +193,7 @@ class DocumentServiceTest {
                 );
 
         when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
-        when(claudeService.analyzeDocument(any(), eq("contract-test.pdf")))
+        when(aiAnalyzer.analyzeDocument(any(), eq("contract-test.pdf")))
                 .thenReturn(analysis);
         when(taskRepo.save(any(Task.class)))
                 .thenAnswer(invocation -> {
@@ -214,7 +214,7 @@ class DocumentServiceTest {
         assertThat(document.getPageCount()).isEqualTo(1);
 
         verify(documentRepo, times(1)).save(document);
-        verify(claudeService, times(1)).analyzeDocument(any(), eq("contract-test.pdf"));
+        verify(aiAnalyzer, times(1)).analyzeDocument(any(), eq("contract-test.pdf"));
         verify(taskRepo, times(1)).save(any());
         verify(auditService, times(1))
                 .log(eq("PROCESSED"), eq("Document"), eq(documentId.toString()), contains("CONTRACT"));
@@ -240,7 +240,7 @@ class DocumentServiceTest {
         ReflectionTestUtils.setField(document, "id", documentId);
 
         when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
-        when(claudeService.analyzeDocument(any(), eq("contract-with-error.pdf")))
+        when(aiAnalyzer.analyzeDocument(any(), eq("contract-with-error.pdf")))
                 .thenThrow(new RuntimeException("Simulated AI failure"));
 
         assertThatThrownBy(() -> documentService.processDocument(documentId))
@@ -250,7 +250,7 @@ class DocumentServiceTest {
         assertThat(document.getStatus()).isEqualTo(Document.DocumentStatus.PENDING);
 
         verify(documentRepo, never()).save(any(Document.class));
-        verify(claudeService, times(1)).analyzeDocument(any(), eq("contract-with-error.pdf"));
+        verify(aiAnalyzer, times(1)).analyzeDocument(any(), eq("contract-with-error.pdf"));
         verify(taskRepo, never()).save(any());
         verify(auditService, never()).log(any(), any(), any(), any());
     }

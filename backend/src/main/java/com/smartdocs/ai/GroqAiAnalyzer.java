@@ -16,22 +16,27 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Free-tier alternative to {@link ClaudeService}. Groq exposes an
+ * OpenAI-compatible chat completions API, so the request/response shape
+ * differs from Anthropic's even though the prompt and parsing are shared.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "smartdocs.ai", name = "provider", havingValue = "claude", matchIfMissing = true)
-public class ClaudeService implements DocumentAiAnalyzer {
+@ConditionalOnProperty(prefix = "smartdocs.ai", name = "provider", havingValue = "groq")
+public class GroqAiAnalyzer implements DocumentAiAnalyzer {
 
-    @Value("${anthropic.api.key}")
+    @Value("${groq.api.key}")
     private String apiKey;
 
-    @Value("${anthropic.api.url}")
+    @Value("${groq.api.url}")
     private String apiUrl;
 
-    @Value("${anthropic.model}")
+    @Value("${groq.model}")
     private String model;
 
-    @Value("${anthropic.max-tokens:2048}")
+    @Value("${groq.max-tokens:2048}")
     private int maxTokens;
 
     private final RestTemplate restTemplate;
@@ -49,8 +54,7 @@ public class ClaudeService implements DocumentAiAnalyzer {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-api-key", apiKey);
-        headers.set("anthropic-version", "2023-06-01");
+        headers.setBearerAuth(apiKey);
 
         try {
             ResponseEntity<Map> response = restTemplate.exchange(
@@ -62,18 +66,19 @@ public class ClaudeService implements DocumentAiAnalyzer {
             String content = extractContent(response.getBody());
             return AiAnalysisParser.parse(objectMapper, content);
         } catch (Exception e) {
-            log.error("Claude API error for '{}': {}", filename, e.getMessage());
+            log.error("Groq API error for '{}': {}", filename, e.getMessage());
             throw new RuntimeException("AI analysis failed: " + e.getMessage(), e);
         }
     }
 
     @SuppressWarnings("unchecked")
     private String extractContent(Map<String, Object> body) {
-        List<Map<String, Object>> content =
-                (List<Map<String, Object>>) body.get("content");
-        if (content == null || content.isEmpty()) {
-            throw new RuntimeException("Empty Claude API response.");
+        List<Map<String, Object>> choices =
+                (List<Map<String, Object>>) body.get("choices");
+        if (choices == null || choices.isEmpty()) {
+            throw new RuntimeException("Empty Groq API response.");
         }
-        return (String) content.get(0).get("text");
+        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+        return (String) message.get("content");
     }
 }

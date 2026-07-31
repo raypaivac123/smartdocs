@@ -21,7 +21,7 @@ Sprint 3 - Empacotamento e Deploy,Dockerfile da aplicacao,"Multi-stage build Mav
 Sprint 3 - Empacotamento e Deploy,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Concluido
 Sprint 3 - Empacotamento e Deploy,Deploy publico gratuito,Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) - sem cartao sem prazo de trial,Infra,Media,Medio
 Sprint 3 - Empacotamento e Deploy,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Concluido
-Sprint 3 - Empacotamento e Deploy,Abstracao de provedor de IA,Interface DocumentAiAnalyzer + implementacao GroqAiAnalyzer (gratuita) ao lado do ClaudeService existente,Backend,Alta,Concluido
+Sprint 3 - Empacotamento e Deploy,Abstracao de provedor de IA,"Interface DocumentAiAnalyzer + implementacao GroqAiAnalyzer (Llama 3.3 70B via Groq, gratuita) como unica forma de analise - ClaudeService removido pra simplificar",Backend,Alta,Concluido
 Sprint 4 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande
 Sprint 4 - Sandbox de PDF,Timeout de processamento,Cancelar e marcar como ERROR se extracao/analise passar de X segundos,Backend,Media,Pequeno
 Sprint 4 - Sandbox de PDF,Validacao de magic bytes,Validar assinatura real do arquivo (%PDF-) alem da extensao .pdf,Seguranca,Alta,Pequeno

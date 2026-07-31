@@ -6,7 +6,7 @@
 DB_USERNAME=smartdocs
 DB_PASSWORD=smartdocs123
 # Só precisa mudar se estiver fora do docker-compose (ex: rodando a app local
-# apontando pro banco de outro host, ou um Postgres gerenciado tipo Railway).
+# apontando pro banco de outro host, ou um Postgres gerenciado tipo Neon).
 # Dentro do compose isso vira "postgres".
 DB_HOST=localhost
 DB_PORT=5432
@@ -24,14 +24,7 @@ RABBITMQ_VHOST=/
 # Exemplo de geracao: openssl rand -base64 32
 JWT_SECRET=troque-este-valor-antes-de-subir-em-qualquer-ambiente-real
 
-# Qual provedor de IA usar: "claude" (padrao) ou "groq" (gratuito, usado no
-# deploy de demonstracao pra nao depender de chave paga).
-AI_PROVIDER=claude
-
-# Claude API (usado quando AI_PROVIDER=claude)
-ANTHROPIC_API_KEY=sk-ant-sua-chave-aqui
-
-# Groq API (usado quando AI_PROVIDER=groq) - gratuito, sem cartao, em
+# Groq API (roda o modelo Llama 3.3 70B) - gratuito, sem cartao, em
 # https://console.groq.com
 GROQ_API_KEY=gsk-sua-chave-aqui
 GROQ_MODEL=llama-3.3-70b-versatile

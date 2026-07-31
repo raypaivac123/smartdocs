@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,14 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Free-tier alternative to {@link ClaudeService}. Groq exposes an
- * OpenAI-compatible chat completions API, so the request/response shape
- * differs from Anthropic's even though the prompt and parsing are shared.
+ * Analyzes documents via Groq's OpenAI-compatible chat completions API
+ * (default model: Llama 3.3 70B), used as a free, no-credit-card alternative
+ * to paid AI providers.
  */
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "smartdocs.ai", name = "provider", havingValue = "groq")
 public class GroqAiAnalyzer implements DocumentAiAnalyzer {
 
     @Value("${groq.api.key}")

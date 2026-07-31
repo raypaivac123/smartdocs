@@ -58,6 +58,8 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 
 > Progresso (29/07/2026): Dockerfile, docker-compose completo e variáveis de produção documentadas prontos.
 > Progresso (31/07/2026): decisão trocada de Railway (trial de $5/30 dias, depois pago) para stack 100% gratuita permanente: Render (backend, dorme após 15min ocioso) + Neon (Postgres, sem cartão) + CloudAMQP (RabbitMQ, plano Little Lemur). Também criada a interface `DocumentAiAnalyzer` (`backend/src/main/java/com/smartdocs/ai/`) com duas implementações — `ClaudeService` (padrão) e `GroqAiAnalyzer` (gratuito, sem cartão, usado no deploy de demonstração) — selecionável via `AI_PROVIDER=claude|groq`.
+>
+> Progresso (31/07/2026, mais tarde): simplificado pra **uma só** implementação — `ClaudeService` removido, `GroqAiAnalyzer` (Llama 3.3 70B via Groq) vira a única forma de análise de IA, sem alternância por env var. Motivo: manter duas implementações em paralelo sem necessidade real (o deploy de demonstração já usava só a gratuita mesmo) estava virando complexidade acidental — melhor um caminho único e bem definido do que dois "meio-usados".
 
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
@@ -65,7 +67,7 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 | 2 | docker-compose completo | Unir app + Postgres + RabbitMQ num único compose, com healthchecks | P | Média |
 | 3 | Deploy público gratuito | Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ) — sem cartão, sem prazo de trial | M | Média |
 | 4 | Variáveis de produção documentadas | README com lista de env vars necessárias em produção | P | Baixa |
-| 5 | Abstração de provedor de IA | Interface `DocumentAiAnalyzer` + implementação `GroqAiAnalyzer` (gratuita) ao lado do `ClaudeService` existente | M | Alta |
+| 5 | Abstração de provedor de IA | Interface `DocumentAiAnalyzer` + implementação `GroqAiAnalyzer` (Llama 3.3 70B via Groq, gratuita) como única forma de análise | M | Alta |
 
 ---
 
@@ -106,7 +108,7 @@ Objetivo: sair do "deploy manual" (Sprint 3) para um fluxo onde o estado do clus
 
 ## Sprint 7 — Deploy na AWS
 
-Objetivo: Railway (Sprint 3) já resolve "ter um link público rápido". Esse sprint é diferente — o
+Objetivo: Render/Neon/CloudAMQP (Sprint 3) já resolve "ter um link público rápido". Esse sprint é diferente — o
 objetivo é experiência de verdade com a nuvem que mais aparece em vaga (EC2/ECS/RDS/VPC/IAM), feita
 com calma, não espremida num deploy de fim de semana. Serve de base pra também hospedar o projeto de
 dados (`docs/planning/data-pipeline-project-idea.md`) mais pra frente (S3 como data lake, etc.).
@@ -114,7 +116,7 @@ dados (`docs/planning/data-pipeline-project-idea.md`) mais pra frente (S3 como d
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|
 | 1 | IAM básico | Usuário/role dedicado com permissão mínima necessária (least privilege), nunca usar a conta root pra deploy | P | Alta |
-| 2 | RDS PostgreSQL | Banco gerenciado na AWS substituindo o Postgres local, em vez de reaproveitar o do Railway | M | Alta |
+| 2 | RDS PostgreSQL | Banco gerenciado na AWS substituindo o Postgres local, em vez de reaproveitar o Neon | M | Alta |
 | 3 | VPC e Security Groups | Rede isolada pro banco (sem IP público) e regras de firewall explícitas liberando só o necessário pro backend | M | Média |
 | 4 | ECS Fargate | Rodar o mesmo container do `backend/Dockerfile` já existente em Fargate, sem gerenciar servidor (EC2) diretamente | G | Alta |
 | 5 | Application Load Balancer | Expor o serviço do ECS publicamente com HTTPS | M | Média |

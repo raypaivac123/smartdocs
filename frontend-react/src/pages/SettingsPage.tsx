@@ -168,7 +168,7 @@ export function SettingsPage() {
             <div className="integration-icon" style={{ background: '#F0FDF4' }}>🤖</div>
             <div>
               <div className="integration-name">AI Provider</div>
-              <div className="integration-desc">Document analysis engine (Claude / Groq)</div>
+              <div className="integration-desc">Document analysis engine (Groq / Llama 3.3)</div>
             </div>
           </div>
           <span className="badge badge-processed">Connected</span>

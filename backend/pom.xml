@@ -32,7 +32,7 @@
 		<pdfbox.version>3.0.8</pdfbox.version>
 		<springdoc.version>2.6.0</springdoc.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
-		<restassured.version>5.5.0</restassured.version>
+		<restassured.version>6.0.1</restassured.version>
 	</properties>
 
 	<dependencies>

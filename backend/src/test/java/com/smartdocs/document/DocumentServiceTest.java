@@ -81,7 +81,7 @@ class DocumentServiceTest {
                 "file",
                 "contract.pdf",
                 "application/pdf",
-                "fake pdf content".getBytes()
+                "%PDF-1.4\nfake pdf content".getBytes()
         );
 
         when(userRepo.findByEmail("dev@smartdocs.de"))
@@ -138,6 +138,24 @@ class DocumentServiceTest {
         assertThatThrownBy(() -> documentService.upload(file))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Only PDF files are allowed.");
+
+        verify(documentRepo, never()).save(any(Document.class));
+        verify(documentProcessingProducer, never()).sendDocumentForProcessing(any(UUID.class));
+        verify(auditService, never()).log(any(), any(), any(), any());
+    }
+
+    @Test
+    void uploadShouldRejectPdfNameWithNonPdfContent() {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "totally-not-a-virus.pdf",
+                "application/pdf",
+                "MZ this is actually an executable".getBytes()
+        );
+
+        assertThatThrownBy(() -> documentService.upload(file))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("File content is not a valid PDF.");
 
         verify(documentRepo, never()).save(any(Document.class));
         verify(documentProcessingProducer, never()).sendDocumentForProcessing(any(UUID.class));

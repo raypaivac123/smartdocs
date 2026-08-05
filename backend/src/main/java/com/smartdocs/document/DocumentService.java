@@ -25,18 +25,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DocumentService {
+
+    private static final byte[] PDF_SIGNATURE = "%PDF-".getBytes(StandardCharsets.US_ASCII);
 
     private final DocumentRepository documentRepo;
     private final TaskRepository taskRepo;
@@ -276,7 +281,7 @@ public class DocumentService {
         );
     }
 
-    private void validateFile(MultipartFile file) {
+    private void validateFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty.");
         }
@@ -290,6 +295,24 @@ public class DocumentService {
         if (file.getSize() > 20L * 1024 * 1024) {
             throw new IllegalArgumentException("File too large. Maximum: 20 MB.");
         }
+
+        if (!hasPdfSignature(file)) {
+            throw new IllegalArgumentException("File content is not a valid PDF.");
+        }
+    }
+
+    private boolean hasPdfSignature(MultipartFile file) throws IOException {
+        byte[] header = new byte[PDF_SIGNATURE.length];
+
+        try (InputStream in = file.getInputStream()) {
+            int bytesRead = in.readNBytes(header, 0, header.length);
+
+            if (bytesRead < header.length) {
+                return false;
+            }
+        }
+
+        return Arrays.equals(header, PDF_SIGNATURE);
     }
 
     private String extractText(String filePath) throws IOException {

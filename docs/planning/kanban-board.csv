@@ -17,33 +17,33 @@ Sprint 2 - CI e Seguranca,SCA - analise de dependencias,Dependabot escaneando po
 Sprint 2 - CI e Seguranca,SAST - analise estatica,Semgrep no pipeline com upload de SARIF pro GitHub code scanning,Seguranca;DevOps,Alta,Concluido
 Sprint 2 - CI e Seguranca,DAST - analise dinamica,"OWASP ZAP baseline scan contra app subindo via docker compose --wait no CI, relatorio como artefato",Seguranca;DevOps,Media,Concluido
 Sprint 2 - CI e Seguranca,Badge de CI no README,Exibir status do pipeline no README,Documentacao,Baixa,Concluido
-Sprint 3 - Empacotamento e Deploy,Dockerfile da aplicacao,"Multi-stage build Maven -> JRE runtime, usuario nao-root",Infra,Media,Concluido
-Sprint 3 - Empacotamento e Deploy,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Concluido
-Sprint 3 - Empacotamento e Deploy,Deploy publico gratuito,"render.yaml + guia prontos (docs/deploy-render.md); falta criar as contas Render/Neon/CloudAMQP e conectar",Infra,Media,Medio
-Sprint 3 - Empacotamento e Deploy,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Concluido
-Sprint 3 - Empacotamento e Deploy,Abstracao de provedor de IA,"Interface DocumentAiAnalyzer + implementacao GroqAiAnalyzer (Llama 3.3 70B via Groq, gratuita) como unica forma de analise - ClaudeService removido pra simplificar",Backend,Alta,Concluido
-Sprint 4 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande
-Sprint 4 - Sandbox de PDF,Timeout de processamento,Cancelar e marcar como ERROR se extracao/analise passar de X segundos,Backend,Media,Pequeno
-Sprint 4 - Sandbox de PDF,Validacao de magic bytes,Validar assinatura real do arquivo (%PDF-) alem da extensao .pdf,Seguranca,Alta,Pequeno
-Sprint 5 - Tempo Real,SSE de status de documento,SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento,Backend,Baixa,Medio
-Sprint 5 - Tempo Real,Frontend consumindo SSE,Trocar polling manual do frontend mock por escuta de eventos,Frontend,Baixa,Pequeno
-Sprint 6 - GitOps e Kubernetes,Manifests base do Kubernetes,"Deployment/Service/Ingress + probes de liveness/readiness, base pro Helm chart e pro Argo Application",Infra,Baixa,Grande
-Sprint 6 - GitOps e Kubernetes,Helm chart do backend,"Empacotar os manifests (deployment, service, configmap) num Helm chart parametrizavel ao inves de YAML solto",Infra,Media,Medio
-Sprint 6 - GitOps e Kubernetes,CI publicando imagem no registry,Estender o CI (GitHub Actions) pra buildar e publicar a imagem Docker a cada push na main,DevOps;Infra,Media,Pequeno
-Sprint 6 - GitOps e Kubernetes,Repositorio de config GitOps,Repositorio separado so com os manifests/Helm values versionando o estado desejado do cluster,Infra,Baixa,Pequeno
-Sprint 6 - GitOps e Kubernetes,ArgoCD sincronizando o cluster,Instalar ArgoCD (local via Minikube) e configurar Application apontando pro repo de config com sync automatico,Infra,Baixa,Medio
-Sprint 7 - Deploy na AWS,IAM basico,Usuario/role dedicado com permissao minima; nunca usar a conta root pra deploy,Seguranca;Infra,Alta,Pequeno
-Sprint 7 - Deploy na AWS,RDS PostgreSQL,Banco gerenciado na AWS substituindo o Postgres local,Infra,Alta,Medio
-Sprint 7 - Deploy na AWS,VPC e Security Groups,Rede isolada pro banco (sem IP publico) e regras de firewall explicitas,Infra;Seguranca,Media,Medio
-Sprint 7 - Deploy na AWS,ECS Fargate,Rodar o mesmo container do Dockerfile em Fargate sem gerenciar servidor diretamente,Infra,Alta,Grande
-Sprint 7 - Deploy na AWS,Application Load Balancer,Expor o servico do ECS publicamente com HTTPS,Infra,Media,Medio
-Sprint 7 - Deploy na AWS,Documentar custo e teardown,Free tier usado e passo a passo pra derrubar tudo e nao gerar cobranca inesperada,Documentacao,Alta,Pequeno
-Sprint 8 - Frontend em React,Reescrever em React + TypeScript,6 paginas + login migradas para componentes mantendo os dados mockados,Frontend,Media,Concluido
-Sprint 8 - Frontend em React,Responsividade,Sidebar em drawer grids que colapsam tabelas com scroll horizontal em telas pequenas,Frontend,Alta,Concluido
-Sprint 8 - Frontend em React,Conectar API real,Login JWT documentos upload tasks e audit consumindo o backend de verdade,Frontend,Media,Concluido
-Sprint 8 - Frontend em React,Corrigir senha do usuario de demo,Hash seedado na V1 nao batia com demo123; corrigido via migration V2,Seguranca,Alta,Concluido
-Sprint 8 - Frontend em React,Timeout no cliente HTTP de IA,RestTemplate sem timeout travava a thread do consumer e impedia o retry/DLX de agir,Backend,Alta,Concluido
-Sprint 9 - Site de Apresentacao,Landing page publica,Pagina em / explicando o problema a solucao e o fluxo com CTA pro login,Frontend,Media,Medio
-Sprint 9 - Site de Apresentacao,Multi-idioma,Suporte a mais de um idioma (pelo menos PT-BR e EN),Frontend,Media,Medio
-Sprint 9 - Site de Apresentacao,Screenshots/demo visual,Prints ou GIF curto do dashboard/upload real,Frontend,Baixa,Pequeno
+Sprint 3 - Empacotamento,Dockerfile da aplicacao,"Multi-stage build Maven -> JRE runtime, usuario nao-root",Infra,Media,Concluido
+Sprint 3 - Empacotamento,docker-compose completo,Unir app + Postgres + RabbitMQ com healthchecks,Infra,Media,Concluido
+Sprint 3 - Empacotamento,Variaveis de producao documentadas,README com lista de env vars necessarias em producao,Documentacao,Baixa,Concluido
+Sprint 3 - Empacotamento,Abstracao de provedor de IA,"Interface DocumentAiAnalyzer + implementacao GroqAiAnalyzer (Llama 3.3 70B via Groq, gratuita) como unica forma de analise - ClaudeService removido pra simplificar",Backend,Alta,Concluido
+Sprint 4 - Frontend em React,Reescrever em React + TypeScript,6 paginas + login migradas para componentes mantendo os dados mockados,Frontend,Media,Concluido
+Sprint 4 - Frontend em React,Responsividade,Sidebar em drawer grids que colapsam tabelas com scroll horizontal em telas pequenas,Frontend,Alta,Concluido
+Sprint 4 - Frontend em React,Conectar API real,Login JWT documentos upload tasks e audit consumindo o backend de verdade,Frontend,Media,Concluido
+Sprint 4 - Frontend em React,Corrigir senha do usuario de demo,Hash seedado na V1 nao batia com demo123; corrigido via migration V2,Seguranca,Alta,Concluido
+Sprint 4 - Frontend em React,Timeout no cliente HTTP de IA,RestTemplate sem timeout travava a thread do consumer e impedia o retry/DLX de agir,Backend,Alta,Concluido
+Sprint 5 - Sandbox de PDF,Validacao de magic bytes,Validar assinatura real do arquivo (%PDF-) alem da extensao .pdf,Seguranca,Alta,Pequeno
+Sprint 5 - Sandbox de PDF,Timeout de processamento,Cancelar e marcar como ERROR se extracao/analise passar de X segundos,Backend,Media,Pequeno
+Sprint 5 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande
+Sprint 6 - Site de Apresentacao,Landing page publica,Pagina em / explicando o problema a solucao e o fluxo com CTA pro login,Frontend,Media,Medio
+Sprint 6 - Site de Apresentacao,Multi-idioma,Suporte a mais de um idioma (pelo menos PT-BR e EN),Frontend,Media,Medio
+Sprint 6 - Site de Apresentacao,Screenshots/demo visual,Prints ou GIF curto do dashboard/upload real,Frontend,Baixa,Pequeno
+Sprint 7 - Tempo Real,SSE de status de documento,SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento,Backend,Baixa,Medio
+Sprint 7 - Tempo Real,Frontend consumindo SSE,Trocar polling manual do frontend mock por escuta de eventos,Frontend,Baixa,Pequeno
+Sprint 8 - GitOps e Kubernetes,Manifests base do Kubernetes,"Deployment/Service/Ingress + probes de liveness/readiness, base pro Helm chart e pro Argo Application",Infra,Baixa,Grande
+Sprint 8 - GitOps e Kubernetes,Helm chart do backend,"Empacotar os manifests (deployment, service, configmap) num Helm chart parametrizavel ao inves de YAML solto",Infra,Media,Medio
+Sprint 8 - GitOps e Kubernetes,CI publicando imagem no registry,Estender o CI (GitHub Actions) pra buildar e publicar a imagem Docker a cada push na main,DevOps;Infra,Media,Pequeno
+Sprint 8 - GitOps e Kubernetes,Repositorio de config GitOps,Repositorio separado so com os manifests/Helm values versionando o estado desejado do cluster,Infra,Baixa,Pequeno
+Sprint 8 - GitOps e Kubernetes,ArgoCD sincronizando o cluster,Instalar ArgoCD (local via Minikube) e configurar Application apontando pro repo de config com sync automatico,Infra,Baixa,Medio
+Sprint 9 - Deploy Publico (Adiado),Deploy publico gratuito,"Render (backend) + Neon (Postgres) + CloudAMQP (RabbitMQ). render.yaml + guia prontos (docs/deploy-render.md); falta criar as contas e conectar - adiado por decisao do usuario, nao e o momento de subir o servico",Infra,Media,Medio
+Sprint 10 - Deploy na AWS (Adiado),IAM basico,Usuario/role dedicado com permissao minima; nunca usar a conta root pra deploy,Seguranca;Infra,Alta,Pequeno
+Sprint 10 - Deploy na AWS (Adiado),RDS PostgreSQL,Banco gerenciado na AWS substituindo o Postgres local,Infra,Alta,Medio
+Sprint 10 - Deploy na AWS (Adiado),VPC e Security Groups,Rede isolada pro banco (sem IP publico) e regras de firewall explicitas,Infra;Seguranca,Media,Medio
+Sprint 10 - Deploy na AWS (Adiado),ECS Fargate,Rodar o mesmo container do Dockerfile em Fargate sem gerenciar servidor diretamente,Infra,Alta,Grande
+Sprint 10 - Deploy na AWS (Adiado),Application Load Balancer,Expor o servico do ECS publicamente com HTTPS,Infra,Media,Medio
+Sprint 10 - Deploy na AWS (Adiado),Documentar custo e teardown,Free tier usado e passo a passo pra derrubar tudo e nao gerar cobranca inesperada,Documentacao,Alta,Pequeno
 Backlog - Planejado,Camada de analytics,Agregacoes e export CSV/Parquet,Backend,Baixa,Grande

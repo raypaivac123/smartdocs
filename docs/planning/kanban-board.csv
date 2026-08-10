@@ -26,7 +26,7 @@ Sprint 4 - Frontend em React,Responsividade,Sidebar em drawer grids que colapsam
 Sprint 4 - Frontend em React,Conectar API real,Login JWT documentos upload tasks e audit consumindo o backend de verdade,Frontend,Media,Concluido
 Sprint 4 - Frontend em React,Corrigir senha do usuario de demo,Hash seedado na V1 nao batia com demo123; corrigido via migration V2,Seguranca,Alta,Concluido
 Sprint 4 - Frontend em React,Timeout no cliente HTTP de IA,RestTemplate sem timeout travava a thread do consumer e impedia o retry/DLX de agir,Backend,Alta,Concluido
-Sprint 5 - Sandbox de PDF,Validacao de magic bytes,Validar assinatura real do arquivo (%PDF-) alem da extensao .pdf,Seguranca,Alta,Pequeno
+Sprint 5 - Sandbox de PDF,Validacao de magic bytes,"Le os 5 primeiros bytes do upload e compara com a assinatura real %PDF-, rejeitando arquivo renomeado",Seguranca,Alta,Concluido
 Sprint 5 - Sandbox de PDF,Timeout de processamento,Cancelar e marcar como ERROR se extracao/analise passar de X segundos,Backend,Media,Pequeno
 Sprint 5 - Sandbox de PDF,Isolar extracao de texto,"Rodar extractText/countPages em subprocesso ou container efemero com limite de CPU/memoria",Seguranca;Backend,Media,Grande
 Sprint 6 - Site de Apresentacao,Landing page publica,Pagina em / explicando o problema a solucao e o fluxo com CTA pro login,Frontend,Media,Medio

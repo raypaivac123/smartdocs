@@ -104,9 +104,11 @@ Objetivo: transformar os tópicos de segurança que você quer levar pra entrevi
 
 ---
 
-## 🔜 Sprint 5 — Sandbox de PDF (próximo passo sugerido)
+## 🔜 Sprint 5 — Sandbox de PDF (em andamento)
 
 Objetivo: hoje qualquer PDF enviado é parseado direto no processo da aplicação pelo PDFBox — um PDF malicioso explorando o parser tem acesso ao mesmo processo/memória da API. Esse sprint contém isso. Não depende de nenhuma conta externa nem deploy — pode ser feito 100% local.
+
+> Progresso (05/08/2026): validação de magic bytes implementada — `DocumentService.hasPdfSignature()` lê os 5 primeiros bytes do upload e compara com a assinatura real `%PDF-`, então um executável renomeado pra `.pdf` (ex: `MZ...`) é rejeitado antes de qualquer processamento.
 
 | # | Item | Descrição | Esforço | Prioridade |
 |---|------|-----------|---------|------------|

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,6 +69,10 @@ class DocumentServiceTest {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ReflectionTestUtils.setField(documentService, "storagePath", "target/test-uploads");
+        ReflectionTestUtils.setField(
+                documentService, "documentProcessingExecutor", Executors.newVirtualThreadPerTaskExecutor()
+        );
+        ReflectionTestUtils.setField(documentService, "processingTimeoutSeconds", 60L);
     }
 
     @Test
@@ -270,6 +275,44 @@ class DocumentServiceTest {
         verify(documentRepo, never()).save(any(Document.class));
         verify(aiAnalyzer, times(1)).analyzeDocument(any(), eq("contract-with-error.pdf"));
         verify(taskRepo, never()).save(any());
+        verify(auditService, never()).log(any(), any(), any(), any());
+    }
+
+    @Test
+    void processDocumentShouldTimeOutWhenAnalysisTakesTooLong() throws Exception {
+        ReflectionTestUtils.setField(documentService, "processingTimeoutSeconds", 1L);
+
+        UUID documentId = UUID.randomUUID();
+        Path pdfPath = createBlankPdf("contract-slow.pdf");
+
+        User user = User.builder()
+                .name("Ana Becker")
+                .email("dev@smartdocs.de")
+                .build();
+
+        Document document = Document.builder()
+                .filename("contract-slow.pdf")
+                .originalFilename("contract-slow.pdf")
+                .filePath(pdfPath.toString())
+                .status(Document.DocumentStatus.PENDING)
+                .uploadedBy(user)
+                .build();
+        ReflectionTestUtils.setField(document, "id", documentId);
+
+        when(documentRepo.findById(documentId)).thenReturn(Optional.of(document));
+        when(aiAnalyzer.analyzeDocument(any(), eq("contract-slow.pdf")))
+                .thenAnswer(invocation -> {
+                    Thread.sleep(3000);
+                    return new DocumentAiAnalyzer.DocumentAnalysis("CONTRACT", Map.of(), "summary", List.of());
+                });
+
+        assertThatThrownBy(() -> documentService.processDocument(documentId))
+                .isInstanceOf(DocumentProcessingException.class)
+                .hasMessageContaining("timed out");
+
+        assertThat(document.getStatus()).isEqualTo(Document.DocumentStatus.PENDING);
+
+        verify(documentRepo, never()).save(any(Document.class));
         verify(auditService, never()).log(any(), any(), any(), any());
     }
 

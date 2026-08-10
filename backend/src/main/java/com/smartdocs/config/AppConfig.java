@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 @EnableAsync
@@ -28,6 +30,16 @@ public class AppConfig {
                 .withConnectTimeout(Duration.ofSeconds(5))
                 .withReadTimeout(Duration.ofSeconds(20));
         return new RestTemplate(ClientHttpRequestFactories.get(settings));
+    }
+
+    @Bean
+    public ExecutorService documentProcessingExecutor() {
+        // PDFBox parsing has no built-in timeout, unlike the RestTemplate above - a
+        // pathological PDF (e.g. deeply nested objects, decompression bomb) can hang
+        // the parser indefinitely. Running it on a virtual thread lets DocumentService
+        // bound the whole extraction+analysis step with Future#get(timeout), so a
+        // stuck document times out instead of blocking the RabbitMQ consumer forever.
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
     @Bean

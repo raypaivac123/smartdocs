@@ -33,3 +33,8 @@ JWT_SECRET=troque-este-valor-antes-de-subir-em-qualquer-ambiente-real
 # https://console.groq.com
 GROQ_API_KEY=gsk-sua-chave-aqui
 GROQ_MODEL=llama-3.3-70b-versatile
+
+# Tempo maximo (segundos) pra extrair texto + analisar um documento antes de
+# desistir e deixar o RabbitMQ tentar de novo. Protege contra um PDF malicioso
+# que trava o parser do PDFBox.
+PROCESSING_TIMEOUT_SECONDS=60

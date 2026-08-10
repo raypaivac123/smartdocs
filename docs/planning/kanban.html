@@ -358,7 +358,7 @@ const ROADMAP = [
 
   { id:"s4-isolar-extracao", list:"Sprint 5 - Sandbox de PDF", name:"Isolar extração de texto", desc:"Rodar extractText/countPages em subprocesso ou container efêmero com limite de CPU/memória", labels:["Segurança","Backend"], priority:"Media", effort:"Grande", startedAt:"", completedAt:"" },
   { id:"s4-timeout", list:"Sprint 5 - Sandbox de PDF", name:"Timeout de processamento", desc:"Cancelar e marcar como ERROR se extração/análise passar de X segundos", labels:["Backend"], priority:"Media", effort:"Pequeno", startedAt:"", completedAt:"" },
-  { id:"s4-magic-bytes", list:"Sprint 5 - Sandbox de PDF", name:"Validação de magic bytes", desc:"Validar assinatura real do arquivo (%PDF-) além da extensão .pdf", labels:["Segurança"], priority:"Alta", effort:"Pequeno", startedAt:"", completedAt:"" },
+  { id:"s4-magic-bytes", list:"Sprint 5 - Sandbox de PDF", name:"Validação de magic bytes", desc:"Lê os 5 primeiros bytes do upload e compara com a assinatura real %PDF-, rejeitando arquivo renomeado (ex: executável disfarçado de .pdf)", labels:["Segurança"], priority:"Alta", effort:"Concluido", startedAt:"2026-08-05", completedAt:"2026-08-05" },
 
   { id:"s5-sse-status", list:"Sprint 7 - Tempo Real", name:"SSE de status de documento", desc:"SseEmitter por documento; consumer do RabbitMQ dispara evento ao terminar processamento", labels:["Backend"], priority:"Baixa", effort:"Medio", startedAt:"", completedAt:"" },
   { id:"s5-sse-frontend", list:"Sprint 7 - Tempo Real", name:"Frontend consumindo SSE", desc:"Trocar polling manual do frontend mock por escuta de eventos", labels:["Frontend"], priority:"Baixa", effort:"Pequeno", startedAt:"", completedAt:"" },

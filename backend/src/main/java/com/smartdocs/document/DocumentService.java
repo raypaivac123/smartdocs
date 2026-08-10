@@ -35,6 +35,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
@@ -49,9 +54,13 @@ public class DocumentService {
     private final DocumentAiAnalyzer aiAnalyzer;
     private final AuditService auditService;
     private final DocumentProcessingProducer documentProcessingProducer;
+    private final ExecutorService documentProcessingExecutor;
 
     @Value("${smartdocs.storage.path}")
     private String storagePath;
+
+    @Value("${smartdocs.processing.timeout-seconds}")
+    private long processingTimeoutSeconds;
 
     @Transactional
     public Document upload(MultipartFile file) throws IOException {
@@ -101,8 +110,8 @@ public class DocumentService {
         try {
             log.info("Processing document via RabbitMQ: {}", doc.getFilename());
 
-            String text = extractText(doc.getFilePath());
-            var analysis = aiAnalyzer.analyzeDocument(text, doc.getFilename());
+            ExtractionResult result = extractAndAnalyzeWithTimeout(doc);
+            var analysis = result.analysis();
 
             doc.setClassification(parseClassification(analysis.classification()));
             doc.setExtractedFields(
@@ -114,7 +123,7 @@ public class DocumentService {
             doc.setStatus(Document.DocumentStatus.PROCESSED);
             doc.setErrorMessage(null);
             doc.setProcessedAt(Instant.now());
-            doc.setPageCount(countPages(doc.getFilePath()));
+            doc.setPageCount(result.pageCount());
 
             documentRepo.save(doc);
 
@@ -146,6 +155,9 @@ public class DocumentService {
                     doc.getId().toString(),
                     "AI analysis: " + analysis.classification()
             );
+        } catch (DocumentProcessingException e) {
+            log.warn("Error processing document {} (RabbitMQ will retry): {}", docId, e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.warn("Error processing document {} (RabbitMQ will retry): {}", docId, e.getMessage());
 
@@ -153,6 +165,36 @@ public class DocumentService {
                     "Failed to process document " + docId, e
             );
         }
+    }
+
+    private record ExtractionResult(DocumentAiAnalyzer.DocumentAnalysis analysis, int pageCount) {}
+
+    private ExtractionResult extractAndAnalyzeWithTimeout(Document doc) {
+        Future<ExtractionResult> future = documentProcessingExecutor.submit(() -> extractAndAnalyze(doc));
+
+        try {
+            return future.get(processingTimeoutSeconds, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            throw new DocumentProcessingException(
+                    "Processing timed out after " + processingTimeoutSeconds
+                            + "s for document " + doc.getId(), e
+            );
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            throw new DocumentProcessingException("Failed to process document " + doc.getId(), cause);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DocumentProcessingException("Interrupted while processing document " + doc.getId(), e);
+        }
+    }
+
+    private ExtractionResult extractAndAnalyze(Document doc) throws IOException {
+        String text = extractText(doc.getFilePath());
+        var analysis = aiAnalyzer.analyzeDocument(text, doc.getFilename());
+        int pageCount = countPages(doc.getFilePath());
+
+        return new ExtractionResult(analysis, pageCount);
     }
 
     @Transactional
